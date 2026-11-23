@@ -6,7 +6,6 @@
 - README general con integrantes, funcionalidades, endpoints y ejecución.
 - Informes de pruebas y cobertura de al menos el 80% de la lógica medida.
 - APK release firmado y su llave `.jks` de evaluación.
-- Capturas del APK instalado, la generación o verificación de firma y la llave.
 - Tablero Trello y evidencias de aportes técnicos del equipo.
 
 ## Firma original
@@ -34,7 +33,6 @@ El script pide la contraseña de la llave sin mostrarla, verifica el certificado
 
 Este ZIP se prepara para el docente con la llave de evaluación solicitada por la pauta. La credencial privada de Firebase Admin, los archivos `.env`, la base de datos y `keystore.properties` se mantienen fuera del repositorio y del ZIP.
 
-Guardar las capturas reales en `capturas-entrega/` antes de ejecutar el script. Los PNG, JPEG y WebP de esa carpeta se incluyen en `ENTREGA/capturas/` dentro del ZIP para el docente. La carpeta queda fuera de Git. El script no confirma una instalación: adjuntar una captura del último APK probado.
 
 ## Copia del código de la API desplegada
 

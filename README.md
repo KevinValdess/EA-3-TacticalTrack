@@ -39,7 +39,7 @@ Para usar la app con el acceso completo, mantener la API actual del servidor o i
 - [Colaboración e historial original](DOCUMENTACION/COLABORACION.md).
 - [Verificaciones e informes automáticos](https://github.com/KevinValdess/EA-3-TacticalTrack/actions).
 
-Los informes, el APK final, su llave de evaluación y las capturas se incorporan a la entrega con los archivos reales del equipo. El tablero Trello todavía debe añadirse.
+Los informes, el APK final y su llave de evaluación se incorporan a la entrega con los archivos reales del equipo. El tablero Trello todavía debe añadirse.
 
 ## Requisitos
 
@@ -193,12 +193,6 @@ Android, desde `APP/`, en PowerShell:
 En Linux o macOS, usar `./gradlew`. El informe de cobertura queda en `APP/app/build/reports/jacoco/logicCoverageReport/html/index.html`.
 
 Consultar [las pruebas y su alcance](DOCUMENTACION/PRUEBAS.md) y descargar los informes generados por GitHub Actions. Las pruebas de autenticación Android comprueban el contrato HTTP con respuestas simuladas. Para validar la integración completa, probar contra la API desplegada el login, la recuperación de sesión, el cierre de sesión, las visitas y las notificaciones.
-
-## Capturas para la entrega
-
-Las capturas reales de generación de la llave, del APK instalado y de usuarios H2 se incorporan al ZIP privado para el docente, dentro de `ENTREGA/capturas/`. La imagen del APK disponible corresponde a la versión previa al cambio de usuarios, por lo que falta adjuntar una captura del último APK probado.
-
-Guardar las imágenes autorizadas en `capturas-entrega/` antes de ejecutar el script de preparación. Esa carpeta queda fuera de Git. Las imágenes no sustituyen el APK ni la llave original.
 
 ## Archivos locales
 

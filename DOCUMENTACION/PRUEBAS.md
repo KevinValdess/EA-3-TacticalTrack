@@ -75,4 +75,4 @@ Antes de cerrar la entrega, comprobar en el último APK firmado:
 4. Recepción del aviso en el teléfono del supervisor.
 5. Conservación de los registros después de reiniciar el servicio.
 
-Guardar capturas y registrar la versión comprobada. Los resultados automáticos no sustituyen esta prueba con el backend real.
+Registrar la versión comprobada y el resultado de cada operación. Los resultados automáticos no sustituyen esta prueba con el backend real.

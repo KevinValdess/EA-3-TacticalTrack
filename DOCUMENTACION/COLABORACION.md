@@ -29,7 +29,7 @@ El historial de esta entrega se consulta en [EA-3-TacticalTrack](https://github.
 
 ## Trello
 
-Falta incorporar el enlace del tablero del equipo y capturas de las tareas con responsables y estado. Las evidencias deben corresponder a la planificación usada durante el proyecto. Un reparto de la exposición o una lista propuesta de tareas no demuestra actividad anterior en Trello.
+Falta incorporar el enlace del tablero del equipo, con sus tareas, responsables y estado. Las evidencias deben corresponder a la planificación usada durante el proyecto. Un reparto de la exposición o una lista propuesta de tareas no demuestra actividad anterior en Trello.
 
 ## Evidencia para la defensa
 
