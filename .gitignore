@@ -23,3 +23,9 @@ secrets/
 
 **/*firebase-admin*.json
 **/auth_session*
+
+# Evidencias y entregas locales con firma original
+entrega-local/
+evidencias-generadas/
+**/__pycache__/
+*.pyc

@@ -1,6 +1,18 @@
-# TacticalTrack — Evaluación 3
+# TacticalTrack
+
+DSY1105 · Desarrollo de Aplicaciones Móviles · Entrega de Evaluación Parcial 4 y defensa de Evaluación Parcial 5.
 
 Aplicación Android para registrar y verificar visitas en terreno. Permite asociar cada visita a un punto de venta y un equipo, adjuntar una fotografía y ubicación GPS, y revisar su aprobación o rechazo. Una API propia en Spring Boot guarda los registros y gestiona los avisos al supervisor mediante Firebase Cloud Messaging. El clima del lugar se consulta en Open-Meteo.
+
+## Integrantes
+
+| Integrante | Cuenta GitHub |
+|---|---|
+| Kevin Valdés | [KevinValdess](https://github.com/KevinValdess) |
+| Jonathan Aliaga | [JonaSlack](https://github.com/JonaSlack) |
+| Victor Salas | [victor-salas89](https://github.com/victor-salas89) |
+
+Los aportes de la etapa anterior están vinculados en [Colaboración y procedencia](DOCUMENTACION/COLABORACION.md), con commits originales de los tres integrantes.
 
 ## Estructura
 
@@ -18,6 +30,15 @@ La app incluye el acceso mediante `POST /api/auth/login`, la recuperación del u
 **Pendiente de sincronización:** la carpeta `API/` conserva la versión publicada en el repositorio de origen. Los cambios de usuarios, sesiones, H2 Console y Swagger realizados directamente en el servidor todavía no están en GitHub. Por eso, compilar y ejecutar esta copia de la API permite probar sus recursos de visitas y catálogo, pero no proporciona el login que necesita la app actual.
 
 Para usar la app con el acceso completo, mantener la API actual del servidor o incorporar primero esos archivos al repositorio. Conservar el JAR y el código del servidor hasta completar la sincronización. Los permisos de usuarios incorporados allí no significan que todos los endpoints de visitas y dispositivos estén protegidos.
+
+## Evidencias y entrega
+
+- [Pruebas, cobertura y alcance de la medición](DOCUMENTACION/PRUEBAS.md).
+- [APK, firma y preparación del ZIP de entrega](DOCUMENTACION/ENTREGA.md).
+- [Colaboración e historial original](DOCUMENTACION/COLABORACION.md).
+- [Verificaciones e informes automáticos](https://github.com/KevinValdess/EA-3-TacticalTrack/actions).
+
+Los informes, el APK final, su llave de evaluación y las capturas se incorporan a la entrega con los archivos reales del equipo. El tablero Trello todavía debe añadirse.
 
 ## Requisitos
 
@@ -63,6 +84,10 @@ H2 se ejecuta dentro del proceso de la API: no hay que iniciar otro servicio de 
 | `PUSH_POLL_MS` | `15000` | Intervalo de revisión de avisos, en milisegundos. |
 
 La instancia desplegada del equipo utiliza el puerto local `18080` y la base `jdbc:h2:file:/var/lib/tacticaltrack/tacticaltrack`, definidos en su configuración del servidor.
+
+### API externa de clima
+
+La app usa Retrofit para consultar `GET https://api.open-meteo.com/v1/forecast`, con los parámetros `latitude`, `longitude`, `current=temperature_2m,weather_code` y `timezone=auto`. El resultado aparece en el detalle de la visita como temperatura, código meteorológico y hora del dato. Es clima actual de referencia, no una reconstrucción del clima histórico de la visita.
 
 ### Recursos incluidos en esta copia de la API
 
@@ -166,7 +191,7 @@ Android, desde `APP/`, en PowerShell:
 
 En Linux o macOS, usar `./gradlew`. El informe de cobertura queda en `APP/app/build/reports/jacoco/logicCoverageReport/html/index.html`.
 
-Las pruebas de autenticación Android comprueban el contrato HTTP con respuestas simuladas. Para validar la integración completa, probar contra la API desplegada el login, la recuperación de sesión, el cierre de sesión, las visitas y las notificaciones.
+Consultar [las pruebas y su alcance](DOCUMENTACION/PRUEBAS.md) y descargar los informes generados por GitHub Actions. Las pruebas de autenticación Android comprueban el contrato HTTP con respuestas simuladas. Para validar la integración completa, probar contra la API desplegada el login, la recuperación de sesión, el cierre de sesión, las visitas y las notificaciones.
 
 ## Archivos locales
 
