@@ -1,0 +1,54 @@
+name: Verificar y publicar APK de entrega
+on:
+  push:
+    paths:
+      - 'ENTREGA/apk-partes/**'
+      - 'scripts/reconstruir_apk.py'
+      - '.github/workflows/apk-entrega.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  verificar:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: android-actions/setup-android@v3
+        with:
+          packages: 'platform-tools platforms;android-35 build-tools;35.0.0'
+          log-accepted-android-sdk-licenses: false
+      - name: Reconstruir el archivo original
+        run: python3 scripts/reconstruir_apk.py
+      - name: Comprobar firma e identidad Android
+        run: |
+          "$ANDROID_HOME/build-tools/35.0.0/apksigner" verify --verbose --print-certs ENTREGA/app-release.apk | tee ENTREGA/firma-apk.txt
+          "$ANDROID_HOME/build-tools/35.0.0/aapt" dump badging ENTREGA/app-release.apk | tee ENTREGA/datos-apk.txt
+          grep -F "package: name='cl.duoc.tacticaltrack'" ENTREGA/datos-apk.txt
+          sha256sum ENTREGA/app-release.apk > ENTREGA/SHA256SUMS.txt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: apk-entrega-verificado
+          path: |
+            ENTREGA/app-release.apk
+            ENTREGA/firma-apk.txt
+            ENTREGA/datos-apk.txt
+            ENTREGA/SHA256SUMS.txt
+          if-no-files-found: error
+  publicar:
+    if: github.ref == 'refs/heads/main'
+    needs: verificar
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: apk-entrega-verificado
+          path: apk-verificado
+      - name: Publicar ejecutable de entrega
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          gh release create apk-7a2ca4c7 apk-verificado/app-release.apk apk-verificado/firma-apk.txt apk-verificado/SHA256SUMS.txt --target "$GITHUB_SHA" --title "TacticalTrack: APK de entrega" --notes-file ENTREGA/NOTAS_APK.md

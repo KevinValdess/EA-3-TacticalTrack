@@ -1,0 +1,17 @@
+{
+  "filename": "app-release.apk",
+  "size": 13434398,
+  "sha256": "7a2ca4c7f5484f821ed6f2d4ac0bd150ce1012c530001182361fa3d9cc76fc53",
+  "parts": [
+    {
+      "path": "app-release.apk.part1",
+      "size": 6000000,
+      "sha256": "197177d19980926b78baa12717767c556978f41b4eda24304eb6d7268ffcf223"
+    },
+    {
+      "path": "app-release.apk.part2",
+      "size": 7434398,
+      "sha256": "e5ae006105eed3ff69d18acf936f0c6bc47aeb114d80397a7c944718122a14bf"
+    }
+  ]
+}

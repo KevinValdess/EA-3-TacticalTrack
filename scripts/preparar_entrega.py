@@ -85,7 +85,7 @@ def main():
                 f'APK SHA-256: `{hashlib.sha256(apk.read_bytes()).hexdigest()}`.', '',
                 f'Alias de la llave: `{args.alias}`.', '',
                 'El APK y la llave incluidos comparten certificado. La contraseña se entrega al docente por el canal acordado.',
-                'El tablero Trello y los informes de pruebas acompañan la entrega.', '']
+                'Los informes de pruebas acompañan la entrega.', '']
     with zipfile.ZipFile(args.out, 'w', compression=zipfile.ZIP_DEFLATED) as archive:
         for relative in tracked:
             path = ROOT / relative

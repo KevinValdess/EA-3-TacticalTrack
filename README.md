@@ -12,8 +12,6 @@ Aplicación Android para registrar y verificar visitas en terreno. Permite asoci
 | Jonathan Aliaga | [JonaSlack](https://github.com/JonaSlack) |
 | Victor Salas | [victor-salas89](https://github.com/victor-salas89) |
 
-Los aportes de la etapa anterior están vinculados en [Colaboración y procedencia](DOCUMENTACION/COLABORACION.md), con commits originales de los tres integrantes.
-
 ## Estructura
 
 | Carpeta | Contenido |
@@ -36,10 +34,9 @@ Para usar la app con el acceso completo, mantener la API actual del servidor o i
 - [Pruebas, cobertura y alcance de la medición](DOCUMENTACION/PRUEBAS.md).
 - [Resultado verificado: 42 pruebas Android, 0 fallos y 94,18% de cobertura de la lógica incluida](DOCUMENTACION/RESULTADOS_PRUEBAS.md).
 - [APK, firma y preparación del ZIP de entrega](DOCUMENTACION/ENTREGA.md).
-- [Colaboración e historial original](DOCUMENTACION/COLABORACION.md).
 - [Verificaciones e informes automáticos](https://github.com/KevinValdess/EA-3-TacticalTrack/actions).
 
-Los informes, el APK final y su llave de evaluación se incorporan a la entrega con los archivos reales del equipo. El tablero Trello todavía debe añadirse.
+Los informes, el APK final y su llave de evaluación forman parte de la entrega. El [APK aportado por el equipo](ENTREGA/README.md) se conserva íntegro y se publica como descarga tras verificar su firma.
 
 ## Requisitos
 
@@ -160,6 +157,9 @@ Para comprobar el envío, iniciar sesión como supervisor, activar los avisos en
 La API guarda el aviso junto con la visita y procesa el envío por separado. Si falla la conexión con Firebase, reintenta el envío. El historial de la app permite revisar las visitas aunque un aviso no llegue.
 
 ## APK firmado
+
+[Descargar el APK de entrega](https://github.com/KevinValdess/EA-3-TacticalTrack/releases/download/apk-7a2ca4c7/app-release.apk). Ver [integridad y verificación](ENTREGA/README.md).
+
 
 Para actualizar la app instalada, conservar la misma llave y alias usados anteriormente. Copiar al nuevo proyecto:
 

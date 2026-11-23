@@ -29,3 +29,9 @@ entrega-local/
 evidencias-generadas/
 **/__pycache__/
 *.pyc
+
+# Archivo reconstruido e informes del APK
+ENTREGA/app-release.apk
+ENTREGA/firma-apk.txt
+ENTREGA/datos-apk.txt
+ENTREGA/SHA256SUMS.txt

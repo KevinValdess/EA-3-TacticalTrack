@@ -6,7 +6,12 @@
 - README general con integrantes, funcionalidades, endpoints y ejecución.
 - Informes de pruebas y cobertura de al menos el 80% de la lógica medida.
 - APK release firmado y su llave `.jks` de evaluación.
-- Tablero Trello y evidencias de aportes técnicos del equipo.
+
+## APK recibido
+
+El archivo aportado por el equipo se conserva íntegro. Se puede [descargar desde la publicación](https://github.com/KevinValdess/EA-3-TacticalTrack/releases/download/apk-7a2ca4c7/app-release.apk) o reconstruir con `python scripts/reconstruir_apk.py`, que genera `ENTREGA/app-release.apk`.
+
+Para preparar el ZIP con ese APK, usar `python scripts/preparar_entrega.py --apk ENTREGA/app-release.apk --apksigner RUTA_A_APKSIGNER`. La llave `.jks` original sigue siendo necesaria para comprobar que ambos certificados coinciden.
 
 ## Firma original
 
