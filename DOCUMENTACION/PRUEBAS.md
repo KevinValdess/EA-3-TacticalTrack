@@ -1,5 +1,9 @@
 # Pruebas y cobertura
 
+## Resultado comprobado
+
+La ejecución [45092692942](https://github.com/KevinValdess/EA-3-TacticalTrack/actions/runs/45092692942) aprobó 42 pruebas Android, sin fallos ni errores, y midió 94,18% de cobertura de líneas de la lógica incluida. Ver el [resumen conservado](RESULTADOS_PRUEBAS.md).
+
 ## Android
 
 Desde `APP/`, con JDK 17 y SDK 35:

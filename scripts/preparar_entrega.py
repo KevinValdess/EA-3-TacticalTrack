@@ -65,6 +65,7 @@ def main():
     parser.add_argument('--apk', type=Path, default=ROOT / 'APP/app/build/outputs/apk/release/app-release.apk')
     parser.add_argument('--keystore', type=Path, default=ROOT / 'APP/signing/tacticaltrack-evaluacion.jks')
     parser.add_argument('--alias', default='tacticaltrack-evaluacion')
+    parser.add_argument('--capturas', type=Path, default=ROOT / 'capturas-entrega')
     parser.add_argument('--apksigner')
     parser.add_argument('--out', type=Path, default=ROOT / 'entrega-local/TacticalTrack_entrega.zip')
     args = parser.parse_args()
@@ -91,6 +92,10 @@ def main():
             path = ROOT / relative
             if path.is_file():
                 archive.write(path, 'TacticalTrack/' + relative.replace('\\', '/'))
+        if args.capturas.is_dir():
+            for image in sorted(args.capturas.iterdir()):
+                if image.is_file() and not image.is_symlink() and image.suffix.lower() in {'.png', '.jpg', '.jpeg', '.webp'}:
+                    archive.write(image, 'TacticalTrack/ENTREGA/capturas/' + image.name)
         archive.write(apk, 'TacticalTrack/ENTREGA/app-release.apk')
         archive.write(key, 'TacticalTrack/ENTREGA/signing/tacticaltrack-evaluacion.jks')
         archive.writestr('TacticalTrack/ENTREGA/FIRMA_VERIFICADA.txt', signature)
