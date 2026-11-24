@@ -8,6 +8,3 @@ signing/*.jks
 app/google-services.json
 secrets/
 *.log
-
-# Resultados locales para el panel Coverage
-cobertura-ide/

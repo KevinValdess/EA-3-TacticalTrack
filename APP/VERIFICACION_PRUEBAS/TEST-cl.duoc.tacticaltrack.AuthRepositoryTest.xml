@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="cl.duoc.tacticaltrack.AuthRepositoryTest" tests="9" skipped="0" failures="0" errors="0" timestamp="2026-11-24T04:19:04" hostname="runnervm0hi8g" time="1.413">
+  <properties/>
+  <testcase name="staleUnauthorizedResponseCannotClearNewerSession" classname="cl.duoc.tacticaltrack.AuthRepositoryTest" time="1.267"/>
+  <testcase name="invalidAccountDuringRestoreClearsSession" classname="cl.duoc.tacticaltrack.AuthRepositoryTest" time="0.053"/>
+  <testcase name="loginUsesServerAccountAndStoresOnlyToken" classname="cl.duoc.tacticaltrack.AuthRepositoryTest" time="0.025"/>
+  <testcase name="logoutCallsServerAndAlwaysClearsDeviceSession" classname="cl.duoc.tacticaltrack.AuthRepositoryTest" time="0.033"/>
+  <testcase name="expiredSessionIsRemovedButConnectionFailureRetainsToken" classname="cl.duoc.tacticaltrack.AuthRepositoryTest" time="0.01"/>
+  <testcase name="expiredOrUnsupportedLoginResponseIsRejected" classname="cl.duoc.tacticaltrack.AuthRepositoryTest" time="0.006"/>
+  <testcase name="restoresFreshNameAndRoleUsingSavedToken" classname="cl.duoc.tacticaltrack.AuthRepositoryTest" time="0.005"/>
+  <testcase name="failedLoginDoesNotCreateLocalAccount" classname="cl.duoc.tacticaltrack.AuthRepositoryTest" time="0.004"/>
+  <testcase name="disabledAndUnknownRolesCannotStartSession" classname="cl.duoc.tacticaltrack.AuthRepositoryTest" time="0.006"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

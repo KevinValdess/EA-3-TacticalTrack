@@ -1,54 +1,30 @@
-# Resultados verificados de pruebas Android
+# Pruebas y cobertura de la app entregada
 
-Commit comprobado: `bafe4b61b9aedffbd1e0637da92522d1c517ea5e`.
-Ejecución: https://github.com/KevinValdess/EA-3-TacticalTrack/actions/runs/45390946636
+## Informe de Android Studio incluido en el ZIP
 
-| Medición | Resultado |
-|---|---:|
-| Pruebas | 73 |
-| Fallos | 0 |
-| Errores | 0 |
-| Omitidas | 0 |
-| Cobertura general de líneas | 90.08% |
-| Líneas cubiertas | 1844 |
-| Líneas sin cubrir | 203 |
-| Mínimo general de líneas | 80 % |
+Fuente: `APP/htmlReport/index.html` y sus páginas de detalle.
 
-La suite incluye pruebas unitarias y pruebas locales de componentes Android con Robolectric. No necesita una API de producción ni un emulador.
-
-## Todas las métricas del informe
-
-| Métrica | Cubiertas | Sin cubrir | Cobertura |
+| Métrica | Cubiertas | Total | Porcentaje del informe |
 |---|---:|---:|---:|
-| INSTRUCTION | 21669 | 3576 | 85.83% |
-| BRANCH | 1167 | 783 | 59.85% |
-| LINE | 1844 | 203 | 90.08% |
-| COMPLEXITY | 854 | 766 | 52.72% |
-| METHOD | 533 | 111 | 82.76% |
-| CLASS | 229 | 11 | 95.42% |
+| Clases | 180 | 193 | 93,3 % |
+| Métodos | 316 | 376 | 84 % |
+| Líneas | 1524 | 1843 | 82,7 % |
+| Ramas | 978 | 2643 | 37 % |
 
-## Cobertura de líneas por paquete
+La cobertura general de líneas del informe adjunto supera el mínimo del 80 %. La cobertura de ramas es otra métrica y no alcanza ese porcentaje.
 
-| Paquete | Cubiertas | Sin cubrir | Cobertura |
-|---|---:|---:|---:|
-| cl.duoc.tacticaltrack.navigation | 143 | 11 | 92.86% |
-| cl.duoc.tacticaltrack.domain | 7 | 0 | 100.00% |
-| cl.duoc.tacticaltrack.ui.components | 93 | 0 | 100.00% |
-| cl.duoc.tacticaltrack.data.local | 256 | 77 | 76.88% |
-| cl.duoc.tacticaltrack.viewmodel | 335 | 11 | 96.82% |
-| cl.duoc.tacticaltrack.data.remote | 102 | 1 | 99.03% |
-| cl.duoc.tacticaltrack.util | 33 | 13 | 71.74% |
-| cl.duoc.tacticaltrack.ui.screens | 604 | 46 | 92.92% |
-| cl.duoc.tacticaltrack.data.repository | 110 | 4 | 96.49% |
-| cl.duoc.tacticaltrack | 16 | 24 | 40.00% |
-| cl.duoc.tacticaltrack.ui.theme | 14 | 0 | 100.00% |
-| cl.duoc.tacticaltrack.model | 27 | 0 | 100.00% |
-| cl.duoc.tacticaltrack.push | 104 | 16 | 86.67% |
+## Resultados JUnit adjuntos
 
-La comprobación mínima corresponde al total de líneas ejecutables del informe general, no a cada paquete por separado. Las ramas y los métodos tienen contadores distintos. No se excluyen pantallas ni adaptadores de este informe. Se incluyen también las implementaciones generadas de Room y BuildConfig. Los filtros internos de JaCoCo para código sintetizado por Kotlin pueden diferir del motor de IntelliJ; por ello sus porcentajes no se deben presentar como si fueran mediciones idénticas.
+Los archivos `APP/VERIFICACION_PRUEBAS/TEST-*.xml` contienen 73 pruebas, 0 fallos, 0 errores y 0 omitidas. Se conservan como fueron recibidos. Sus resultados y el HTML son evidencias adjuntas; no se afirma que se hayan generado en la misma ejecución ni que esta revisión haya ejecutado las pruebas en el computador del usuario.
 
-El código de producción recibido en APP.zip se conserva sin cambios. Se amplían las pruebas y se ajusta su configuración. La firma, Firebase y la configuración de SDK locales no se incluyen en este paquete.
+## Reproducir la comprobación general
 
-## Importar en Android Studio
+Desde APP, con JDK 17:
 
-El porcentaje de esta ejecución no acredita el panel de un equipo distinto. Ejecuta desde APP `gradlew.bat clean :app:prepararCoberturaIDE --no-daemon` para comprobar las 73 pruebas y exportar los datos locales. Después importa `APP/cobertura-ide/TacticalTrack.exec` en Run → Manage Coverage Reports, desmarcando las suites anteriores. El resumen local está en `APP/cobertura-ide/RESULTADO_LOCAL.txt`.
+```powershell
+.\gradlew.bat clean testDebugUnitTest fullCoverageReport verifyFullCoverage
+```
+
+El reporte JaCoCo queda en `app/build/reports/jacoco/fullCoverageReport/html/index.html`. Su denominador y sus filtros internos de código generado pueden diferir de los del motor de Android Studio. El resultado de esta ejecución nueva debe leerse directamente de su reporte, sin reemplazarlo por el porcentaje del HTML adjunto.
+
+Las configuraciones antiguas que invocaban `prepararCoberturaIDE` se retiran porque esa tarea no forma parte de la versión recibida.

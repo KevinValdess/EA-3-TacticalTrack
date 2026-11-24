@@ -1,0 +1,143 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > TacticalTrackApplication</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">cl.duoc.tacticaltrack</a>
+</div>
+
+<h1>Coverage Summary for Class: TacticalTrackApplication (cl.duoc.tacticaltrack)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">TacticalTrackApplication</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (3/3)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    25.5%
+  </span>
+  <span class="absValue">
+    (27/106)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (14/14)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package cl.duoc.tacticaltrack
+&nbsp;
+&nbsp;import android.app.Application
+&nbsp;import cl.duoc.tacticaltrack.data.local.AppDatabase
+&nbsp;import cl.duoc.tacticaltrack.data.repository.UserPreferencesRepository
+&nbsp;import cl.duoc.tacticaltrack.data.repository.VisitRepository
+&nbsp;
+<b class="fc">&nbsp;class TacticalTrackApplication : Application() {</b>
+&nbsp;    override fun onCreate() {
+<b class="pc">&nbsp;        super.onCreate()</b>
+<b class="fc">&nbsp;        val auth = authRepository</b>
+<b class="fc">&nbsp;        cl.duoc.tacticaltrack.data.remote.ApiFactory.sessionToken = auth::token</b>
+<b class="fc">&nbsp;        cl.duoc.tacticaltrack.data.remote.ApiFactory.onUnauthorized = auth::invalidate</b>
+<b class="fc">&nbsp;        cl.duoc.tacticaltrack.push.PushRegistration.initialize(this)</b>
+&nbsp;    }
+<b class="pc">&nbsp;    val authRepository by lazy {</b>
+<b class="fc">&nbsp;        cl.duoc.tacticaltrack.data.repository.AuthRepository(</b>
+<b class="fc">&nbsp;            cl.duoc.tacticaltrack.data.remote.ApiFactory.auth,</b>
+<b class="fc">&nbsp;            cl.duoc.tacticaltrack.data.local.EncryptedSessionTokenStore(this)</b>
+&nbsp;        )
+&nbsp;    }
+<b class="pc">&nbsp;    val catalogRepository by lazy { cl.duoc.tacticaltrack.data.repository.CatalogRepository(cl.duoc.tacticaltrack.data.remote.ApiFactory.catalog) }</b>
+<b class="pc">&nbsp;    val database by lazy { AppDatabase.getInstance(this) }</b>
+<b class="pc">&nbsp;    val visitRepository by lazy { VisitRepository(database.visitDao(), cl.duoc.tacticaltrack.data.remote.ApiFactory.visits, cl.duoc.tacticaltrack.data.remote.AndroidEvidenceStore(this)) }</b>
+<b class="pc">&nbsp;    val preferencesRepository by lazy { UserPreferencesRepository(this) }</b>
+&nbsp;}
+&nbsp;
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2026-11-24 08:54</div>
+</div>
+</body>
+</html>

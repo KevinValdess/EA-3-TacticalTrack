@@ -1,0 +1,140 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > AuthUser</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">cl.duoc.tacticaltrack.model</a>
+</div>
+
+<h1>Coverage Summary for Class: AuthUser (cl.duoc.tacticaltrack.model)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">AuthUser</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (3/3)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    39%
+  </span>
+  <span class="absValue">
+    (64/164)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (15/15)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package cl.duoc.tacticaltrack.model
+&nbsp;
+<b class="fc">&nbsp;data class AuthUser(</b>
+<b class="pc">&nbsp;    val id: Long,</b>
+<b class="pc">&nbsp;    val email: String,</b>
+<b class="pc">&nbsp;    val name: String,</b>
+<b class="pc">&nbsp;    val role: String,</b>
+<b class="pc">&nbsp;    val enabled: Boolean,</b>
+<b class="pc">&nbsp;    val supervisorId: String?</b>
+&nbsp;) {
+&nbsp;    val displayRole: String
+<b class="pc">&nbsp;        get() = when (role) {</b>
+<b class="fc">&nbsp;            &quot;SUPERVISOR&quot; -&gt; &quot;Supervisor&quot;</b>
+<b class="fc">&nbsp;            &quot;OPERARIO&quot; -&gt; &quot;Operario&quot;</b>
+<b class="fc">&nbsp;            else -&gt; error(&quot;Rol de usuario no reconocido.&quot;)</b>
+&nbsp;        }
+&nbsp;
+&nbsp;    fun validated(): AuthUser {
+<b class="pc">&nbsp;        require(enabled &amp;&amp; id &gt; 0 &amp;&amp; name.isNotBlank() &amp;&amp; email.isNotBlank())</b>
+<b class="fc">&nbsp;        require(role == &quot;OPERARIO&quot; || role == &quot;SUPERVISOR&quot;)</b>
+<b class="fc">&nbsp;        require(role != &quot;SUPERVISOR&quot; || !supervisorId.isNullOrBlank())</b>
+<b class="pc">&nbsp;        return this</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2026-11-24 08:54</div>
+</div>
+</body>
+</html>

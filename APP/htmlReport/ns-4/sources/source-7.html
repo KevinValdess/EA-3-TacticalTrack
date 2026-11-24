@@ -1,0 +1,203 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > VisitRepository</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">cl.duoc.tacticaltrack.data.repository</a>
+</div>
+
+<h1>Coverage Summary for Class: VisitRepository (cl.duoc.tacticaltrack.data.repository)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">VisitRepository</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (8/8)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    63%
+  </span>
+  <span class="absValue">
+    (34/54)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (39/39)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">VisitRepository$deleteVisit$1</td>
+  </tr>
+  <tr>
+    <td class="name">VisitRepository$editVisit$1</td>
+  </tr>
+  <tr>
+    <td class="name">VisitRepository$fetchVisit$1</td>
+  </tr>
+  <tr>
+    <td class="name">VisitRepository$refresh$1</td>
+  </tr>
+  <tr>
+    <td class="name">VisitRepository$saveVisit$1</td>
+  </tr>
+  <tr>
+    <td class="name">VisitRepository$updateSupervisorStatus$1</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (8/8)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    63%
+  </span>
+  <span class="absValue">
+    (34/54)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (39/39)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package cl.duoc.tacticaltrack.data.repository
+&nbsp;
+&nbsp;import cl.duoc.tacticaltrack.data.local.VisitDao
+&nbsp;import cl.duoc.tacticaltrack.data.local.VisitEntity
+&nbsp;import cl.duoc.tacticaltrack.data.remote.*
+&nbsp;import cl.duoc.tacticaltrack.domain.VisitRules
+&nbsp;import kotlinx.coroutines.flow.Flow
+&nbsp;import kotlinx.coroutines.sync.Mutex
+&nbsp;import kotlinx.coroutines.sync.withLock
+&nbsp;
+&nbsp;/** Actualiza el caché local después de cada operación confirmada por la API. */
+<b class="fc">&nbsp;class VisitRepository(</b>
+<b class="fc">&nbsp;    private val visitDao: VisitDao,</b>
+<b class="fc">&nbsp;    private val api: VisitApi,</b>
+<b class="fc">&nbsp;    private val evidence: EvidenceStore</b>
+&nbsp;) {
+<b class="fc">&nbsp;    private val mutex = Mutex()</b>
+<b class="pc">&nbsp;    val visits: Flow&lt;List&lt;VisitEntity&gt;&gt; = visitDao.observeAll()</b>
+<b class="pc">&nbsp;    fun observeVisit(id: Long): Flow&lt;VisitEntity?&gt; = visitDao.observeById(id)</b>
+&nbsp;
+<b class="fc">&nbsp;    suspend fun fetchVisit(id: Long) = mutex.withLock {</b>
+<b class="fc">&nbsp;        val visit=api.get(id)</b>
+<b class="fc">&nbsp;        visitDao.insert(visit.toEntity(evidence.persist(id,visit.evidenceBase64)))</b>
+<b class="fc">&nbsp;        Unit</b>
+<b class="fc">&nbsp;    }</b>
+<b class="fc">&nbsp;    suspend fun refresh() = mutex.withLock {</b>
+<b class="fc">&nbsp;        val remote = api.all()</b>
+<b class="fc">&nbsp;        val snapshot = remote.map { it.toEntity(evidence.persist(it.id, it.evidenceBase64)) }</b>
+<b class="fc">&nbsp;        visitDao.replaceSnapshot(snapshot)</b>
+<b class="fc">&nbsp;    }</b>
+<b class="fc">&nbsp;    suspend fun saveVisit(visit: VisitEntity, requestId: String): Long = mutex.withLock {</b>
+<b class="fc">&nbsp;        val dto = VisitDto.fromEntity(visit, evidence.encode(visit.photoUri), requestId)</b>
+<b class="fc">&nbsp;        val created = api.create(dto)</b>
+<b class="fc">&nbsp;        visitDao.insert(created.toEntity(evidence.persist(created.id, created.evidenceBase64)))</b>
+<b class="fc">&nbsp;        created.id</b>
+&nbsp;    }
+<b class="fc">&nbsp;    suspend fun editVisit(id: Long, status: String, observations: String) = mutex.withLock {</b>
+<b class="fc">&nbsp;        require(VisitRules.editError(status, observations) == null) { &quot;Datos de edición inválidos&quot; }</b>
+<b class="fc">&nbsp;        val updated = api.edit(id, EditVisitRequest(status, observations.trim()))</b>
+<b class="fc">&nbsp;        visitDao.insert(updated.toEntity(evidence.persist(id, updated.evidenceBase64)))</b>
+<b class="fc">&nbsp;        Unit</b>
+<b class="fc">&nbsp;    }</b>
+<b class="fc">&nbsp;    suspend fun updateSupervisorStatus(id: Long, status: String) = mutex.withLock {</b>
+<b class="fc">&nbsp;        require(status in listOf(&quot;Pendiente&quot;, &quot;Aprobada&quot;, &quot;Rechazada&quot;))</b>
+<b class="fc">&nbsp;        val updated = api.status(id, SupervisorRequest(status))</b>
+<b class="fc">&nbsp;        visitDao.insert(updated.toEntity(evidence.persist(id, updated.evidenceBase64)))</b>
+<b class="fc">&nbsp;        Unit</b>
+<b class="fc">&nbsp;    }</b>
+<b class="fc">&nbsp;    suspend fun deleteVisit(id: Long) = mutex.withLock {</b>
+<b class="fc">&nbsp;        api.delete(id)</b>
+<b class="fc">&nbsp;        visitDao.delete(id)</b>
+<b class="fc">&nbsp;        evidence.remove(id)</b>
+<b class="fc">&nbsp;    }</b>
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2026-11-24 08:54</div>
+</div>
+</body>
+</html>

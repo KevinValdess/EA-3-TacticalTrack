@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>DeviceRegistrationWorker.kt</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">app</a> &gt; <a href="index.source.html" class="el_package">cl.duoc.tacticaltrack.push</a> &gt; <span class="el_source">DeviceRegistrationWorker.kt</span></div><h1>DeviceRegistrationWorker.kt</h1><pre class="source lang-java linenums">package cl.duoc.tacticaltrack.push
+import android.content.Context
+import androidx.work.CoroutineWorker
+import androidx.work.WorkerParameters
+import cl.duoc.tacticaltrack.data.remote.ApiFactory
+import cl.duoc.tacticaltrack.data.repository.DeviceRegistrationRepository
+import kotlinx.coroutines.CancellationException
+import retrofit2.HttpException
+
+<span class="fc" id="L10">class DeviceRegistrationWorker(context:Context,parameters:WorkerParameters):CoroutineWorker(context,parameters){</span>
+ override suspend fun doWork():Result {
+<span class="fc" id="L12">  val prefs=PushRegistration.preferences(applicationContext)</span>
+<span class="pc bpc" id="L13" title="1 of 4 branches missed.">  val enabled=prefs.getBoolean(&quot;enabled&quot;,false)&amp;&amp;prefs.getBoolean(&quot;supervisor&quot;,false)</span>
+<span class="fc bfc" id="L14" title="All 2 branches covered.">  val id=prefs.getString(&quot;installationId&quot;,null)?:return Result.failure()</span>
+<span class="fc" id="L15">  val token=prefs.getString(&quot;token&quot;,null)</span>
+<span class="pc bpc" id="L16" title="1 of 8 branches missed.">  if(enabled&amp;&amp;token.isNullOrBlank())return Result.retry()</span>
+<span class="fc" id="L17">  return try {</span>
+<span class="fc bfc" id="L18" title="All 2 branches covered.">   val supervisorId=prefs.getString(&quot;supervisorId&quot;,null).orEmpty()</span>
+<span class="fc bfc" id="L19" title="All 4 branches covered.">   if(enabled&amp;&amp;supervisorId.isBlank())return Result.failure()</span>
+<span class="fc bfc" id="L20" title="All 2 branches covered.">   DeviceRegistrationRepository(ApiFactory.devices).sync(id,supervisorId,token,enabled)</span>
+<span class="fc bfc" id="L21" title="All 2 branches covered.">   prefs.edit().putString(&quot;status&quot;,if(enabled)&quot;Dispositivo registrado en la API.&quot; else &quot;Dispositivo desactivado en la API.&quot;).apply()</span>
+<span class="fc" id="L22">   Result.success()</span>
+<span class="nc" id="L23">  }catch(e:CancellationException){throw e}</span>
+<span class="fc" id="L24">   catch(e:HttpException){</span>
+<span class="fc" id="L25">    prefs.edit().putString(&quot;status&quot;,&quot;La API rechazó el registro: HTTP ${e.code()}.&quot;).apply()</span>
+<span class="pc bpc" id="L26" title="1 of 10 branches missed.">    if(e.code() in 400..499&amp;&amp;e.code()!=408&amp;&amp;e.code()!=429)Result.failure() else Result.retry()</span>
+<span class="fc" id="L27">   }catch(e:Exception){</span>
+<span class="fc" id="L28">    prefs.edit().putString(&quot;status&quot;,&quot;Registro pendiente: se reintentará con conexión.&quot;).apply()</span>
+<span class="fc" id="L29">    Result.retry()</span>
+   }
+ }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

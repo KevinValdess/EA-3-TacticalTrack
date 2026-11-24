@@ -1,7 +1,6 @@
 import org.gradle.testing.jacoco.tasks.JacocoReport
 import org.gradle.testing.jacoco.tasks.JacocoCoverageVerification
 import java.util.Properties
-import java.util.Locale
 
 plugins {
     id("com.android.application")
@@ -202,55 +201,19 @@ tasks.withType<Test>().configureEach {
     systemProperty("robolectric.dependency.repo.url", "https://repo.maven.apache.org/maven2")
 }
 
-// Exportar los datos REALES de la ejecución completa para cargarlos en Coverage.
-tasks.register("prepararCoberturaIDE") {
-    group = "verification"
-    description = "Comprueba todas las pruebas y exporta la cobertura para Android Studio."
-    dependsOn("verifyFullCoverage")
-    doLast {
-        val builder = javax.xml.parsers.DocumentBuilderFactory.newInstance().apply {
-            setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false)
-            setFeature("http://xml.org/sax/features/external-general-entities", false)
-            setFeature("http://xml.org/sax/features/external-parameter-entities", false)
-        }.newDocumentBuilder()
-        val resultsDir = layout.buildDirectory.dir("test-results/testDebugUnitTest").get().asFile
-        val suites = resultsDir.listFiles { file -> file.name.startsWith("TEST-") && file.extension == "xml" }?.toList().orEmpty()
-        check(suites.isNotEmpty()) { "No existen resultados de pruebas de esta ejecución." }
-        var tests = 0
-        var failures = 0
-        var errors = 0
-        var skipped = 0
-        suites.forEach { file ->
-            val suite = builder.parse(file).documentElement
-            tests += suite.getAttribute("tests").toInt()
-            failures += suite.getAttribute("failures").toInt()
-            errors += suite.getAttribute("errors").toInt()
-            skipped += suite.getAttribute("skipped").toInt()
-        }
-        check(tests >= 73) { "Se ejecutaron solo $tests pruebas; esta versión debe ejecutar al menos 73. Revisa los filtros de ejecución." }
-        check(failures == 0 && errors == 0 && skipped == 0) {
-            "Pruebas: $tests; fallos: $failures; errores: $errors; omitidas: $skipped."
-        }
-        val xml = layout.buildDirectory.file("reports/jacoco/fullCoverageReport/fullCoverageReport.xml").get().asFile
-        val root = builder.parse(xml).documentElement
-        val line = (0 until root.childNodes.length).map { root.childNodes.item(it) }
-            .filterIsInstance<org.w3c.dom.Element>()
-            .first { it.tagName == "counter" && it.getAttribute("type") == "LINE" }
-        val covered = line.getAttribute("covered").toInt()
-        val missed = line.getAttribute("missed").toInt()
-        val total = covered + missed
-        check(total > 0 && covered.toDouble() / total >= 0.80) { "La cobertura general de líneas no alcanza el 80%." }
-        val data = layout.buildDirectory.file("jacoco/testDebugUnitTest.exec").get().asFile
-        check(data.exists() && data.length() > 0) { "No existe el archivo de ejecución JaCoCo." }
-        val destination = rootProject.file("cobertura-ide").apply { mkdirs() }
-        data.copyTo(destination.resolve("TacticalTrack.exec"), overwrite = true)
-        xml.copyTo(destination.resolve("TacticalTrack.xml"), overwrite = true)
-        val percent = "%.2f".format(Locale.ROOT, covered * 100.0 / total)
-        val summary = "Pruebas: $tests\nFallos: $failures\nErrores: $errors\nOmitidas: $skipped\n" +
-            "Cobertura general LINE: $percent% ($covered/$total)\n" +
-            "Datos para importar en Android Studio: ${destination.resolve("TacticalTrack.exec")}\n" +
-            "Alternativa XML: ${destination.resolve("TacticalTrack.xml")}\n"
-        destination.resolve("RESULTADO_LOCAL.txt").writeText(summary)
-        println(summary)
+// Al ejecutar "Run with Coverage" desde Android Studio, el IDE usa su propio motor de cobertura.
+// Se desactiva el agente JaCoCo en ese caso para que no se instrumente dos veces y Robolectric no falle.
+// Desde la terminal (fullCoverageReport) JaCoCo sigue activo.
+val runFromIde = System.getProperty("idea.active") == "true" ||
+    providers.gradleProperty("android.injected.invoked.from.ide").isPresent
+if (runFromIde) {
+    tasks.withType<Test>().configureEach {
+        extensions.configure<org.gradle.testing.jacoco.plugins.JacocoTaskExtension> { isEnabled = false }
     }
+}
+
+// El motor de cobertura de Android Studio modifica clases que Robolectric también reescribe,
+// y la JVM las rechaza con VerifyError. Se omite la verificación de bytecode solo en las pruebas.
+tasks.withType<Test>().configureEach {
+    jvmArgs("-XX:+UnlockDiagnosticVMOptions", "-XX:-BytecodeVerificationRemote", "-XX:-BytecodeVerificationLocal")
 }

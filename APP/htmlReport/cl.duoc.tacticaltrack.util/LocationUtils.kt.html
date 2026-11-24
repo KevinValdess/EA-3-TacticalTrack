@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>LocationUtils.kt</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">app</a> &gt; <a href="index.source.html" class="el_package">cl.duoc.tacticaltrack.util</a> &gt; <span class="el_source">LocationUtils.kt</span></div><h1>LocationUtils.kt</h1><pre class="source lang-java linenums">package cl.duoc.tacticaltrack.util
+
+import android.Manifest
+import android.annotation.SuppressLint
+import android.content.Context
+import android.content.pm.PackageManager
+import android.location.Location
+import androidx.core.content.ContextCompat
+import com.google.android.gms.location.LocationServices
+import com.google.android.gms.location.Priority
+import com.google.android.gms.tasks.CancellationTokenSource
+
+fun hasLocationPermission(context: Context): Boolean {
+<span class="pc bpc" id="L14" title="1 of 2 branches missed.">    val fine = ContextCompat.checkSelfPermission(</span>
+<span class="fc" id="L15">        context,</span>
+<span class="fc" id="L16">        Manifest.permission.ACCESS_FINE_LOCATION</span>
+    ) == PackageManager.PERMISSION_GRANTED
+
+<span class="fc bfc" id="L19" title="All 2 branches covered.">    val coarse = ContextCompat.checkSelfPermission(</span>
+<span class="fc" id="L20">        context,</span>
+<span class="fc" id="L21">        Manifest.permission.ACCESS_COARSE_LOCATION</span>
+    ) == PackageManager.PERMISSION_GRANTED
+
+<span class="pc bpc" id="L24" title="1 of 4 branches missed.">    return fine || coarse</span>
+}
+
+@SuppressLint(&quot;MissingPermission&quot;)
+fun requestCurrentLocation(
+    context: Context,
+    onSuccess: (Location) -&gt; Unit,
+    onError: (String) -&gt; Unit
+) {
+<span class="pc bpc" id="L33" title="1 of 2 branches missed.">    if (!hasLocationPermission(context)) {</span>
+<span class="fc" id="L34">        onError(&quot;Se requiere permiso de ubicación.&quot;)</span>
+<span class="fc" id="L35">        return</span>
+    }
+
+<span class="nc" id="L38">    val client = LocationServices.getFusedLocationProviderClient(context)</span>
+<span class="nc" id="L39">    val token = CancellationTokenSource()</span>
+
+<span class="nc" id="L41">    client.getCurrentLocation(</span>
+<span class="nc" id="L42">        Priority.PRIORITY_HIGH_ACCURACY,</span>
+<span class="nc" id="L43">        token.token</span>
+<span class="nc" id="L44">    ).addOnSuccessListener { location -&gt;</span>
+<span class="nc bnc" id="L45" title="All 2 branches missed.">        if (location != null) {</span>
+<span class="nc" id="L46">            onSuccess(location)</span>
+        } else {
+<span class="nc" id="L48">            onError(&quot;No fue posible obtener la ubicación. Activa el GPS e inténtalo nuevamente.&quot;)</span>
+        }
+<span class="nc" id="L50">    }.addOnFailureListener {</span>
+<span class="nc bnc" id="L51" title="All 2 branches missed.">        onError(it.message ?: &quot;Error al obtener la ubicación.&quot;)</span>
+<span class="nc" id="L52">    }</span>
+<span class="nc" id="L53">}</span>
+
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

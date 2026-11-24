@@ -1,0 +1,240 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > AndroidEvidenceStore</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">cl.duoc.tacticaltrack.data.remote</a>
+</div>
+
+<h1>Coverage Summary for Class: AndroidEvidenceStore (cl.duoc.tacticaltrack.data.remote)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">AndroidEvidenceStore</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (4/4)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (4/4)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">AndroidEvidenceStore$encode$1</td>
+  </tr>
+  <tr>
+    <td class="name">AndroidEvidenceStore$encode$2</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    68.8%
+  </span>
+  <span class="absValue">
+    (11/16)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (15/15)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">AndroidEvidenceStore$persist$1</td>
+  </tr>
+  <tr>
+    <td class="name">AndroidEvidenceStore$persist$2</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (3/3)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">AndroidEvidenceStore$remove$2</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (7/7)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    68.8%
+  </span>
+  <span class="absValue">
+    (11/16)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (23/23)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package cl.duoc.tacticaltrack.data.remote
+&nbsp;
+&nbsp;import android.content.Context
+&nbsp;import android.graphics.Bitmap
+&nbsp;import android.graphics.BitmapFactory
+&nbsp;import android.net.Uri
+&nbsp;import android.util.Base64
+&nbsp;import kotlinx.coroutines.Dispatchers
+&nbsp;import kotlinx.coroutines.withContext
+&nbsp;import java.io.ByteArrayOutputStream
+&nbsp;import java.io.File
+&nbsp;
+&nbsp;interface EvidenceStore {
+&nbsp;    suspend fun encode(uri: String): String
+&nbsp;    suspend fun persist(id: Long, base64: String): String
+&nbsp;    suspend fun remove(id: Long)
+&nbsp;}
+&nbsp;
+&nbsp;/** Comprime las fotos para enviarlas a la API y guarda la evidencia recibida. */
+<b class="fc">&nbsp;class AndroidEvidenceStore(private val context: Context) : EvidenceStore {</b>
+<b class="fc">&nbsp;    override suspend fun encode(uri: String): String = withContext(Dispatchers.IO) {</b>
+<b class="fc">&nbsp;        val parsed = Uri.parse(uri)</b>
+<b class="fc">&nbsp;        val bounds = BitmapFactory.Options().apply { inJustDecodeBounds = true }</b>
+<b class="fc">&nbsp;        context.contentResolver.openInputStream(parsed).use { BitmapFactory.decodeStream(it, null, bounds) }</b>
+<b class="pc">&nbsp;        require(bounds.outWidth &gt; 0 &amp;&amp; bounds.outHeight &gt; 0) { &quot;Fotografía inválida&quot; }</b>
+<b class="fc">&nbsp;        var sample = 1</b>
+<b class="fc">&nbsp;        while (maxOf(bounds.outWidth, bounds.outHeight) / sample &gt; 1280) sample *= 2</b>
+<b class="fc">&nbsp;        val options = BitmapFactory.Options().apply { inSampleSize = sample }</b>
+<b class="fc">&nbsp;        val bitmap = context.contentResolver.openInputStream(parsed).use {</b>
+<b class="pc">&nbsp;            requireNotNull(BitmapFactory.decodeStream(it, null, options)) { &quot;No se pudo abrir la fotografía&quot; }</b>
+&nbsp;        }
+&nbsp;        try {
+<b class="fc">&nbsp;            val output = ByteArrayOutputStream()</b>
+<b class="pc">&nbsp;            check(bitmap.compress(Bitmap.CompressFormat.JPEG, 75, output))</b>
+<b class="fc">&nbsp;            val encoded = Base64.encodeToString(output.toByteArray(), Base64.NO_WRAP)</b>
+<b class="pc">&nbsp;            require(encoded.length &lt;= 3_000_000) { &quot;La evidencia es demasiado grande&quot; }</b>
+<b class="fc">&nbsp;            encoded</b>
+<b class="fc">&nbsp;        } finally { bitmap.recycle() }</b>
+&nbsp;    }
+<b class="fc">&nbsp;    override suspend fun persist(id: Long, base64: String): String = withContext(Dispatchers.IO) {</b>
+<b class="fc">&nbsp;        val file = File(context.filesDir, &quot;remote_evidence_$id.jpg&quot;)</b>
+<b class="fc">&nbsp;        file.writeBytes(Base64.decode(base64, Base64.DEFAULT))</b>
+<b class="fc">&nbsp;        Uri.fromFile(file).toString()</b>
+&nbsp;    }
+<b class="fc">&nbsp;    override suspend fun remove(id: Long) { withContext(Dispatchers.IO) { File(context.filesDir, &quot;remote_evidence_$id.jpg&quot;).delete() } }</b>
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2026-11-24 08:54</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="cl.duoc.tacticaltrack.PersistenceAndroidTest" tests="9" skipped="0" failures="0" errors="0" timestamp="2026-11-24T04:19:23" hostname="runnervm0hi8g" time="4.36">
+  <properties/>
+  <testcase name="evidenceRoundTripWritesBytesAndCanBeRemovedTwice" classname="cl.duoc.tacticaltrack.PersistenceAndroidTest" time="0.052"/>
+  <testcase name="deniedGpsReturnsErrorAndCoarsePermissionIsAccepted" classname="cl.duoc.tacticaltrack.PersistenceAndroidTest" time="0.031"/>
+  <testcase name="roomPreservesFieldsOrdersVisitsAndReplacesSnapshot" classname="cl.duoc.tacticaltrack.PersistenceAndroidTest" time="1.296"/>
+  <testcase name="corruptSessionIsDiscarded" classname="cl.duoc.tacticaltrack.PersistenceAndroidTest" time="0.034"/>
+  <testcase name="rememberedEmailIsReadByNewRepository" classname="cl.duoc.tacticaltrack.PersistenceAndroidTest" time="0.159"/>
+  <testcase name="logoutClearsScopedViewModels" classname="cl.duoc.tacticaltrack.PersistenceAndroidTest" time="0.025"/>
+  <testcase name="fileDatabaseSurvivesReopening" classname="cl.duoc.tacticaltrack.PersistenceAndroidTest" time="0.046"/>
+  <testcase name="galleryCopiesFileAndCameraReturnsProviderUri" classname="cl.duoc.tacticaltrack.PersistenceAndroidTest" time="0.06"/>
+  <testcase name="photoEncodingRejectsInvalidContentAndCompressesLargeImage" classname="cl.duoc.tacticaltrack.PersistenceAndroidTest" time="2.655"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

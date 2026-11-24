@@ -1,0 +1,129 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > EvidenceStore</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">cl.duoc.tacticaltrack.data.remote</a>
+</div>
+
+<h1>Coverage Summary for Class: EvidenceStore (cl.duoc.tacticaltrack.data.remote)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+</tr>
+  <tr>
+    <td class="name">EvidenceStore$Subclass7</td>
+  </tr>
+  <tr>
+    <td class="name">EvidenceStore$Subclass7$auxiliary$J0b5dCnu</td>
+  </tr>
+  <tr>
+    <td class="name">EvidenceStore$Subclass7$auxiliary$oedGtPau</td>
+  </tr>
+  <tr>
+    <td class="name">EvidenceStore$Subclass7$auxiliary$prGHexGB</td>
+  </tr>
+  <tr>
+    <td class="name">EvidenceStore$Subclass7$auxiliary$t0IJs7Ad</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package cl.duoc.tacticaltrack.data.remote
+&nbsp;
+&nbsp;import android.content.Context
+&nbsp;import android.graphics.Bitmap
+&nbsp;import android.graphics.BitmapFactory
+&nbsp;import android.net.Uri
+&nbsp;import android.util.Base64
+&nbsp;import kotlinx.coroutines.Dispatchers
+&nbsp;import kotlinx.coroutines.withContext
+&nbsp;import java.io.ByteArrayOutputStream
+&nbsp;import java.io.File
+&nbsp;
+&nbsp;interface EvidenceStore {
+&nbsp;    suspend fun encode(uri: String): String
+&nbsp;    suspend fun persist(id: Long, base64: String): String
+&nbsp;    suspend fun remove(id: Long)
+&nbsp;}
+&nbsp;
+&nbsp;/** Comprime las fotos para enviarlas a la API y guarda la evidencia recibida. */
+&nbsp;class AndroidEvidenceStore(private val context: Context) : EvidenceStore {
+&nbsp;    override suspend fun encode(uri: String): String = withContext(Dispatchers.IO) {
+&nbsp;        val parsed = Uri.parse(uri)
+&nbsp;        val bounds = BitmapFactory.Options().apply { inJustDecodeBounds = true }
+&nbsp;        context.contentResolver.openInputStream(parsed).use { BitmapFactory.decodeStream(it, null, bounds) }
+&nbsp;        require(bounds.outWidth &gt; 0 &amp;&amp; bounds.outHeight &gt; 0) { &quot;Fotografía inválida&quot; }
+&nbsp;        var sample = 1
+&nbsp;        while (maxOf(bounds.outWidth, bounds.outHeight) / sample &gt; 1280) sample *= 2
+&nbsp;        val options = BitmapFactory.Options().apply { inSampleSize = sample }
+&nbsp;        val bitmap = context.contentResolver.openInputStream(parsed).use {
+&nbsp;            requireNotNull(BitmapFactory.decodeStream(it, null, options)) { &quot;No se pudo abrir la fotografía&quot; }
+&nbsp;        }
+&nbsp;        try {
+&nbsp;            val output = ByteArrayOutputStream()
+&nbsp;            check(bitmap.compress(Bitmap.CompressFormat.JPEG, 75, output))
+&nbsp;            val encoded = Base64.encodeToString(output.toByteArray(), Base64.NO_WRAP)
+&nbsp;            require(encoded.length &lt;= 3_000_000) { &quot;La evidencia es demasiado grande&quot; }
+&nbsp;            encoded
+&nbsp;        } finally { bitmap.recycle() }
+&nbsp;    }
+&nbsp;    override suspend fun persist(id: Long, base64: String): String = withContext(Dispatchers.IO) {
+&nbsp;        val file = File(context.filesDir, &quot;remote_evidence_$id.jpg&quot;)
+&nbsp;        file.writeBytes(Base64.decode(base64, Base64.DEFAULT))
+&nbsp;        Uri.fromFile(file).toString()
+&nbsp;    }
+&nbsp;    override suspend fun remove(id: Long) { withContext(Dispatchers.IO) { File(context.filesDir, &quot;remote_evidence_$id.jpg&quot;).delete() } }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2026-11-24 08:54</div>
+</div>
+</body>
+</html>

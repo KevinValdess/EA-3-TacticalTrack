@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>NewVisitScreen.kt</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">app</a> &gt; <a href="index.source.html" class="el_package">cl.duoc.tacticaltrack.ui.screens</a> &gt; <span class="el_source">NewVisitScreen.kt</span></div><h1>NewVisitScreen.kt</h1><pre class="source lang-java linenums">package cl.duoc.tacticaltrack.ui.screens
+
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ErrorOutline
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Button
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import cl.duoc.tacticaltrack.ui.components.SelectorField
+import cl.duoc.tacticaltrack.viewmodel.VisitViewModel
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun NewVisitScreen(
+    viewModel: VisitViewModel,
+    onBack: () -&gt; Unit,
+    onContinue: () -&gt; Unit
+<span class="pc bpc" id="L36" title="5 of 18 branches missed.">) {</span>
+<span class="fc" id="L37">    val state by viewModel.form.collectAsStateWithLifecycle()</span>
+<span class="fc" id="L38">    val catalog by viewModel.catalogState.collectAsStateWithLifecycle()</span>
+<span class="fc" id="L39">    val assets = catalog.assets.filter { it.pointId==state.pointId }</span>
+
+<span class="pc bpc" id="L41" title="1 of 2 branches missed.">    Scaffold(</span>
+<span class="fc" id="L42">        topBar = {</span>
+<span class="pc bpc" id="L43" title="5 of 8 branches missed.">            TopAppBar(</span>
+<span class="pc bpc" id="L44" title="5 of 8 branches missed.">                title = { Text(&quot;Nueva visita&quot;) },</span>
+<span class="fc" id="L45">                navigationIcon = {</span>
+<span class="pc bpc" id="L46" title="5 of 8 branches missed.">                    IconButton(onClick = onBack) {</span>
+<span class="pc bpc" id="L47" title="4 of 8 branches missed.">                        Icon(Icons.Default.ArrowBack, contentDescription = &quot;Volver&quot;)</span>
+<span class="pc" id="L48">                    }</span>
+<span class="fc" id="L49">                }</span>
+<span class="nc" id="L50">            )</span>
+<span class="fc" id="L51">        }</span>
+<span class="fc" id="L52">    ) { innerPadding -&gt;</span>
+<span class="pc bpc" id="L53" title="2 of 6 branches missed.">        Column(</span>
+<span class="fc" id="L54">            modifier = Modifier</span>
+<span class="fc" id="L55">                .fillMaxSize()</span>
+<span class="fc" id="L56">                .padding(innerPadding)</span>
+<span class="fc" id="L57">                .verticalScroll(rememberScrollState())</span>
+<span class="fc" id="L58">                .padding(16.dp),</span>
+<span class="fc" id="L59">            verticalArrangement = Arrangement.spacedBy(16.dp)</span>
+        ) {
+<span class="fc" id="L61">            Text(</span>
+<span class="fc" id="L62">                &quot;1. Datos de la revisión&quot;,</span>
+<span class="fc" id="L63">                style = MaterialTheme.typography.titleLarge</span>
+            )
+
+<span class="fc bfc" id="L66" title="All 2 branches covered.">            if(catalog.busy) Text(&quot;Consultando catálogo…&quot;)</span>
+<span class="fc bfc" id="L67" title="All 2 branches covered.">            catalog.error?.let { Text(it,color=MaterialTheme.colorScheme.error) }</span>
+<span class="fc" id="L68">            SelectorField(</span>
+<span class="fc" id="L69">                label = &quot;Punto de venta&quot;,</span>
+<span class="fc bfc" id="L70" title="All 4 branches covered.">                selected = catalog.points.firstOrNull { it.id==state.pointId }?.name.orEmpty(),</span>
+<span class="fc" id="L71">                options = catalog.points.map { it.id to it.name },</span>
+<span class="fc" id="L72">                error = state.errors.point,</span>
+<span class="fc" id="L73">                onSelected = viewModel::onPointSelected</span>
+            )
+
+<span class="fc" id="L76">            SelectorField(</span>
+<span class="fc" id="L77">                label = &quot;Activo&quot;,</span>
+<span class="fc bfc" id="L78" title="All 2 branches covered.">                selected = catalog.assets.firstOrNull { it.id==state.assetId }?.let {</span>
+<span class="fc" id="L79">                    &quot;${it.code} · ${it.type}&quot;</span>
+<span class="fc bfc" id="L80" title="All 2 branches covered.">                }.orEmpty(),</span>
+<span class="fc" id="L81">                options = assets.map { it.id to &quot;${it.code} · ${it.type}&quot; },</span>
+<span class="fc" id="L82">                error = state.errors.asset,</span>
+<span class="fc" id="L83">                onSelected = viewModel::onAssetSelected,</span>
+<span class="fc bfc" id="L84" title="All 2 branches covered.">                enabled = assets.isNotEmpty()</span>
+            )
+
+<span class="fc" id="L87">            SelectorField(</span>
+<span class="fc" id="L88">                label = &quot;Tipo de visita&quot;,</span>
+<span class="fc" id="L89">                selected = state.visitType,</span>
+<span class="fc" id="L90">                options = viewModel.visitTypes.map { it to it },</span>
+<span class="fc" id="L91">                error = state.errors.visitType,</span>
+<span class="fc" id="L92">                onSelected = viewModel::onVisitTypeSelected</span>
+            )
+
+<span class="fc" id="L95">            SelectorField(</span>
+<span class="fc" id="L96">                label = &quot;Estado del equipo&quot;,</span>
+<span class="fc" id="L97">                selected = state.equipmentStatus,</span>
+<span class="fc" id="L98">                options = viewModel.equipmentStatuses.map { it to it },</span>
+<span class="fc" id="L99">                error = state.errors.equipmentStatus,</span>
+<span class="fc" id="L100">                onSelected = viewModel::onEquipmentStatusSelected</span>
+            )
+
+<span class="fc" id="L103">            OutlinedTextField(</span>
+<span class="fc" id="L104">                value = state.observations,</span>
+<span class="fc" id="L105">                onValueChange = viewModel::onObservationsChange,</span>
+<span class="pc bpc" id="L106" title="3 of 8 branches missed.">                label = { Text(&quot;Observaciones&quot;) },</span>
+<span class="fc" id="L107">                minLines = 3,</span>
+<span class="fc bfc" id="L108" title="All 2 branches covered.">                isError = state.errors.observations != null,</span>
+<span class="fc" id="L109">                trailingIcon = {</span>
+<span class="pc bpc" id="L110" title="2 of 8 branches missed.">                    if (state.errors.observations != null) {</span>
+<span class="pc bpc" id="L111" title="1 of 2 branches missed.">                        Icon(Icons.Default.ErrorOutline, contentDescription = &quot;Error de observaciones&quot;)</span>
+<span class="nc" id="L112">                    }</span>
+<span class="fc" id="L113">                },</span>
+<span class="fc" id="L114">                supportingText = {</span>
+<span class="pc bpc" id="L115" title="3 of 10 branches missed.">                    state.errors.observations?.let { Text(it) }</span>
+<span class="fc" id="L116">                },</span>
+<span class="fc" id="L117">                modifier = Modifier.fillMaxWidth()</span>
+            )
+
+<span class="fc" id="L120">            Button(</span>
+<span class="fc" id="L121">                onClick = {</span>
+<span class="fc bfc" id="L122" title="All 2 branches covered.">                    if (viewModel.validateBeforeEvidence()) {</span>
+<span class="fc" id="L123">                        onContinue()</span>
+                    }
+<span class="fc" id="L125">                },</span>
+<span class="fc" id="L126">                modifier = Modifier.fillMaxWidth()</span>
+<span class="fc" id="L127">            ) {</span>
+<span class="pc bpc" id="L128" title="3 of 8 branches missed.">                Text(&quot;Continuar a evidencia&quot;)</span>
+<span class="fc" id="L129">            }</span>
+<span class="fc" id="L130">        }</span>
+<span class="fc" id="L131">    }</span>
+<span class="fc bfc" id="L132" title="All 2 branches covered.">}</span>
+
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

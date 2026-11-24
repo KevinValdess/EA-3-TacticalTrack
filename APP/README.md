@@ -54,17 +54,21 @@ El historial se conserva en `tacticaltrack_remote.db`. La app no importa automá
 
 ## Notificaciones
 
-Añadir la configuración del proyecto en `app/google-services.json` y seguir [la configuración de Firebase](../README.md#firebase-y-notificaciones).
+Añadir la configuración del proyecto en `app/google-services.json` y seguir [la guía de Firebase](../DOCUMENTACION/FIREBASE_CONFIGURACION.md).
 
 En el teléfono del supervisor, entrar con ese rol y activar los avisos desde Inicio. Android 13 o superior solicita permiso para mostrarlos. WorkManager se encarga de registrar el dispositivo y reintentar errores de conexión.
 
 ## Pruebas
 
+La suite contiene 73 pruebas. El informe adjunto de Android Studio se puede abrir en [htmlReport/index.html](htmlReport/index.html); su cobertura general de líneas es 82,7 %.
+
+Para ejecutar la comprobación general desde la terminal:
+
 ```bash
-./gradlew testDebugUnitTest logicCoverageReport verifyLogicCoverage
+./gradlew clean testDebugUnitTest fullCoverageReport verifyFullCoverage
 ```
 
-El reporte se genera en `app/build/reports/jacoco/logicCoverageReport/html/index.html`. La medición incluye ViewModels, repositorios y reglas; excluye interfaz, DTO, factorías y adaptadores de plataforma.
+En Windows usar `gradlew.bat`. El informe JaCoCo se genera en `app/build/reports/jacoco/fullCoverageReport/html/index.html`. El mínimo del 80 % se comprueba sobre las líneas del alcance general, incluidas las pantallas y los adaptadores. Los contadores del motor del IDE y de JaCoCo no deben confundirse. Ver [PRUEBAS_COBERTURA.md](PRUEBAS_COBERTURA.md) y [RESULTADOS_VERIFICADOS.md](RESULTADOS_VERIFICADOS.md).
 
 ## APK firmado
 

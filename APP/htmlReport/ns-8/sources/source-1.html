@@ -1,0 +1,166 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > DeviceRegistrationWorker</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">cl.duoc.tacticaltrack.push</a>
+</div>
+
+<h1>Coverage Summary for Class: DeviceRegistrationWorker (cl.duoc.tacticaltrack.push)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">DeviceRegistrationWorker</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (2/2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    96.4%
+  </span>
+  <span class="absValue">
+    (27/28)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    93.8%
+  </span>
+  <span class="absValue">
+    (15/16)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">DeviceRegistrationWorker$doWork$1</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (2/2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    96.4%
+  </span>
+  <span class="absValue">
+    (27/28)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    93.8%
+  </span>
+  <span class="absValue">
+    (15/16)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package cl.duoc.tacticaltrack.push
+&nbsp;import android.content.Context
+&nbsp;import androidx.work.CoroutineWorker
+&nbsp;import androidx.work.WorkerParameters
+&nbsp;import cl.duoc.tacticaltrack.data.remote.ApiFactory
+&nbsp;import cl.duoc.tacticaltrack.data.repository.DeviceRegistrationRepository
+&nbsp;import kotlinx.coroutines.CancellationException
+&nbsp;import retrofit2.HttpException
+&nbsp;
+<b class="fc">&nbsp;class DeviceRegistrationWorker(context:Context,parameters:WorkerParameters):CoroutineWorker(context,parameters){</b>
+&nbsp; override suspend fun doWork():Result {
+<b class="fc">&nbsp;  val prefs=PushRegistration.preferences(applicationContext)</b>
+<b class="fc">&nbsp;  val enabled=prefs.getBoolean(&quot;enabled&quot;,false)&amp;&amp;prefs.getBoolean(&quot;supervisor&quot;,false)</b>
+<b class="fc">&nbsp;  val id=prefs.getString(&quot;installationId&quot;,null)?:return Result.failure()</b>
+<b class="fc">&nbsp;  val token=prefs.getString(&quot;token&quot;,null)</b>
+<b class="fc">&nbsp;  if(enabled&amp;&amp;token.isNullOrBlank())return Result.retry()</b>
+&nbsp;  return try {
+<b class="fc">&nbsp;   val supervisorId=prefs.getString(&quot;supervisorId&quot;,null).orEmpty()</b>
+<b class="fc">&nbsp;   if(enabled&amp;&amp;supervisorId.isBlank())return Result.failure()</b>
+<b class="fc">&nbsp;   DeviceRegistrationRepository(ApiFactory.devices).sync(id,supervisorId,token,enabled)</b>
+<b class="fc">&nbsp;   prefs.edit().putString(&quot;status&quot;,if(enabled)&quot;Dispositivo registrado en la API.&quot; else &quot;Dispositivo desactivado en la API.&quot;).apply()</b>
+<b class="fc">&nbsp;   Result.success()</b>
+<b class="nc">&nbsp;  }catch(e:CancellationException){throw e}</b>
+&nbsp;   catch(e:HttpException){
+<b class="fc">&nbsp;    prefs.edit().putString(&quot;status&quot;,&quot;La API rechazó el registro: HTTP ${e.code()}.&quot;).apply()</b>
+<b class="pc">&nbsp;    if(e.code() in 400..499&amp;&amp;e.code()!=408&amp;&amp;e.code()!=429)Result.failure() else Result.retry()</b>
+&nbsp;   }catch(e:Exception){
+<b class="fc">&nbsp;    prefs.edit().putString(&quot;status&quot;,&quot;Registro pendiente: se reintentará con conexión.&quot;).apply()</b>
+<b class="fc">&nbsp;    Result.retry()</b>
+&nbsp;   }
+&nbsp; }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2026-11-24 08:54</div>
+</div>
+</body>
+</html>

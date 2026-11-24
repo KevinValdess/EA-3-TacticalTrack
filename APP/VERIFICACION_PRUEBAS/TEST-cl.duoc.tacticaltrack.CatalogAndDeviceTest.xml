@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="cl.duoc.tacticaltrack.CatalogAndDeviceTest" tests="4" skipped="0" failures="0" errors="0" timestamp="2026-11-24T04:19:06" hostname="runnervm0hi8g" time="0.39">
+  <properties/>
+  <testcase name="emptyAndInconsistentCatalogsAreRejected" classname="cl.duoc.tacticaltrack.CatalogAndDeviceTest" time="0.325"/>
+  <testcase name="catalogLoadsRemoteData" classname="cl.duoc.tacticaltrack.CatalogAndDeviceTest" time="0.008"/>
+  <testcase name="malformedRegistrationDoesNotReachApi" classname="cl.duoc.tacticaltrack.CatalogAndDeviceTest" time="0.049"/>
+  <testcase name="registerAndDisableUseDifferentEndpoints" classname="cl.duoc.tacticaltrack.CatalogAndDeviceTest" time="0.007"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

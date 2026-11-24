@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PushSettingsCard.kt</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">app</a> &gt; <a href="index.source.html" class="el_package">cl.duoc.tacticaltrack.push</a> &gt; <span class="el_source">PushSettingsCard.kt</span></div><h1>PushSettingsCard.kt</h1><pre class="source lang-java linenums">package cl.duoc.tacticaltrack.push
+import android.Manifest
+import android.content.SharedPreferences
+import android.content.pm.PackageManager
+import android.os.Build
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.layout.*
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.dp
+import androidx.core.content.ContextCompat
+
+@Composable
+<span class="pc bpc" id="L17" title="2 of 6 branches missed.">fun PushSettingsCard(){</span>
+<span class="fc" id="L18"> val context=LocalContext.current</span>
+<span class="fc" id="L19"> val prefs=remember {PushRegistration.preferences(context)}</span>
+<span class="pc" id="L20"> var enabled by remember {mutableStateOf(prefs.getBoolean(&quot;enabled&quot;,false))}</span>
+<span class="pc bpc" id="L21" title="1 of 2 branches missed."> var status by remember {mutableStateOf(prefs.getString(&quot;status&quot;,&quot;&quot;).orEmpty())}</span>
+<span class="fc" id="L22"> DisposableEffect(prefs){</span>
+<span class="pc bnc" id="L23" title="All 2 branches missed.">  val listener=SharedPreferences.OnSharedPreferenceChangeListener { p,_-&gt;enabled=p.getBoolean(&quot;enabled&quot;,false);status=p.getString(&quot;status&quot;,&quot;&quot;).orEmpty() }</span>
+<span class="fc" id="L24">  prefs.registerOnSharedPreferenceChangeListener(listener)</span>
+<span class="fc" id="L25">  onDispose {prefs.unregisterOnSharedPreferenceChangeListener(listener)}</span>
+ }
+<span class="fc" id="L27"> val launcher=rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()){granted-&gt;</span>
+<span class="nc bnc" id="L28" title="All 2 branches missed.">  if(granted)PushRegistration.setEnabled(context,true)</span>
+<span class="nc" id="L29">  else prefs.edit().putString(&quot;status&quot;,&quot;Permiso denegado. Puedes revisar visitas desde el historial.&quot;).apply()</span>
+<span class="nc" id="L30"> }</span>
+<span class="pc bpc" id="L31" title="1 of 2 branches missed."> Card(Modifier.fillMaxWidth()){</span>
+<span class="pc bpc" id="L32" title="4 of 6 branches missed.">  Column(Modifier.padding(12.dp),verticalArrangement=Arrangement.spacedBy(6.dp)){</span>
+<span class="fc" id="L33">   Text(&quot;Avisos de nuevas visitas&quot;,style=MaterialTheme.typography.titleMedium)</span>
+<span class="pc bpc" id="L34" title="1 of 2 branches missed.">   if(!PushRegistration.configured(context))Text(&quot;Las notificaciones todavía no están configuradas.&quot;)</span>
+<span class="pc" id="L35">   else {</span>
+<span class="nc bnc" id="L36" title="All 2 branches missed.">    Text(if(enabled)&quot;Avisos activados en este dispositivo.&quot; else &quot;Recibe avisos cuando se registren nuevas visitas.&quot;)</span>
+<span class="nc" id="L37">    TextButton(onClick={</span>
+<span class="nc bnc" id="L38" title="All 2 branches missed.">     if(enabled)PushRegistration.setEnabled(context,false)</span>
+<span class="nc bnc" id="L39" title="All 4 branches missed.">     else if(Build.VERSION.SDK_INT&gt;=33&amp;&amp;ContextCompat.checkSelfPermission(context,Manifest.permission.POST_NOTIFICATIONS)!=PackageManager.PERMISSION_GRANTED)launcher.launch(Manifest.permission.POST_NOTIFICATIONS)</span>
+<span class="nc" id="L40">     else PushRegistration.setEnabled(context,true)</span>
+<span class="nc bnc" id="L41" title="All 10 branches missed.">    }){Text(if(enabled)&quot;Desactivar avisos&quot; else &quot;Activar avisos&quot;)}</span>
+<span class="nc bnc" id="L42" title="All 10 branches missed.">    if(enabled)TextButton(onClick={PushRegistration.refreshToken(context)}){Text(&quot;Volver a conectar&quot;)}</span>
+   }
+<span class="pc bpc" id="L44" title="2 of 4 branches missed.">   if(status.isNotBlank())Text(status,style=MaterialTheme.typography.bodySmall)</span>
+<span class="pc" id="L45">  }</span>
+<span class="fc" id="L46"> }</span>
+<span class="pc bpc" id="L47" title="1 of 2 branches missed.">}</span>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

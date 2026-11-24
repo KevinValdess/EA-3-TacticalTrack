@@ -1,0 +1,137 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > LoginResponse</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">cl.duoc.tacticaltrack.data.remote</a>
+</div>
+
+<h1>Coverage Summary for Class: LoginResponse (cl.duoc.tacticaltrack.data.remote)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">LoginResponse</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    27.8%
+  </span>
+  <span class="absValue">
+    (20/72)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (5/5)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package cl.duoc.tacticaltrack.data.remote
+&nbsp;
+&nbsp;import cl.duoc.tacticaltrack.model.AuthUser
+&nbsp;import retrofit2.http.Body
+&nbsp;import retrofit2.http.GET
+&nbsp;import retrofit2.http.Header
+&nbsp;import retrofit2.http.POST
+&nbsp;
+&nbsp;data class LoginRequest(val email: String, val password: String)
+<b class="fc">&nbsp;data class LoginResponse(</b>
+<b class="pc">&nbsp;    val accessToken: String,</b>
+<b class="pc">&nbsp;    val tokenType: String,</b>
+<b class="pc">&nbsp;    val expiresAt: String,</b>
+<b class="pc">&nbsp;    val user: AuthUser</b>
+&nbsp;)
+&nbsp;
+&nbsp;interface AuthApi {
+&nbsp;    @POST(&quot;api/auth/login&quot;) suspend fun login(@Body request: LoginRequest): LoginResponse
+&nbsp;    @GET(&quot;api/auth/me&quot;) suspend fun me(@Header(&quot;Authorization&quot;) authorization: String): AuthUser
+&nbsp;    @POST(&quot;api/auth/logout&quot;) suspend fun logout(@Header(&quot;Authorization&quot;) authorization: String)
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2026-11-24 08:54</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="cl.duoc.tacticaltrack.VisitRepositoryTest" tests="12" skipped="0" failures="0" errors="0" timestamp="2026-11-24T04:19:33" hostname="runnervm0hi8g" time="0.42">
+  <properties/>
+  <testcase name="saveUsesServerIdAndIdempotencyKey" classname="cl.duoc.tacticaltrack.VisitRepositoryTest" time="0.354"/>
+  <testcase name="supervisorStatusPersistsRemotely" classname="cl.duoc.tacticaltrack.VisitRepositoryTest" time="0.007"/>
+  <testcase name="refreshReplacesCacheAfterSuccess" classname="cl.duoc.tacticaltrack.VisitRepositoryTest" time="0.007"/>
+  <testcase name="refreshErrorKeepsCache" classname="cl.duoc.tacticaltrack.VisitRepositoryTest" time="0.005"/>
+  <testcase name="failedDeleteKeepsCache" classname="cl.duoc.tacticaltrack.VisitRepositoryTest" time="0.007"/>
+  <testcase name="failedNotificationLookupDoesNotInsertCache" classname="cl.duoc.tacticaltrack.VisitRepositoryTest" time="0.005"/>
+  <testcase name="observeReturnsDaoFlow" classname="cl.duoc.tacticaltrack.VisitRepositoryTest" time="0.002"/>
+  <testcase name="editTrimsAndCachesResponse" classname="cl.duoc.tacticaltrack.VisitRepositoryTest" time="0.008"/>
+  <testcase name="failedSaveDoesNotInsert" classname="cl.duoc.tacticaltrack.VisitRepositoryTest" time="0.005"/>
+  <testcase name="invalidEditDoesNotCallServer" classname="cl.duoc.tacticaltrack.VisitRepositoryTest" time="0.004"/>
+  <testcase name="deleteServerBeforeCache" classname="cl.duoc.tacticaltrack.VisitRepositoryTest" time="0.008"/>
+  <testcase name="fetchingNotificationVisitCachesRemoteEvidence" classname="cl.duoc.tacticaltrack.VisitRepositoryTest" time="0.007"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

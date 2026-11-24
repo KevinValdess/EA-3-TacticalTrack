@@ -1,44 +1,39 @@
-# Comprobar y mostrar la cobertura en Android Studio
+# Pruebas y cobertura general de TacticalTrack
 
-El HTML anterior y el panel de cobertura de Android Studio no son la misma ejecución. Un porcentaje obtenido en GitHub no demuestra por sí solo el porcentaje visible en tu equipo. La captura con 28 % no cumple el objetivo.
+## Aplicar la actualización
 
-## Aplicar esta versión
+Antes de reemplazar archivos, cierra las ejecuciones activas de pruebas. Conserva tu configuración local de Firebase, firma y SDK.
 
-1. Combina la carpeta APP de este ZIP con tu APP actual. Conserva google-services.json, local.properties y la carpeta de firma.
-2. Abre APP en Android Studio y ejecuta Sync Project with Gradle Files.
-3. Selecciona JDK 17 en Settings → Build, Execution, Deployment → Build Tools → Gradle → Gradle JDK.
+Extrae el ZIP y copia su carpeta APP sobre tu carpeta APP actual, aceptando reemplazar los archivos. Combina las carpetas; no borres previamente el proyecto. El paquete no incluye google-services.json, local.properties ni las claves de firma, por lo que debes conservar esos archivos de tu instalación.
 
-## Ejecutar todas las pruebas
+La actualización contiene el código recibido, archivos de Gradle y pruebas. También incorpora un informe HTML de la ejecución verificada. No requiere actualizar la API del servidor.
 
-En el selector de ejecución de Android Studio elige:
+## Ejecutar en Windows
 
-TacticalTrack - Todas las pruebas y cobertura general
+En Android Studio selecciona JDK 17 para Gradle en Settings → Build, Execution, Deployment → Build Tools → Gradle → Gradle JDK. La verificación automática utiliza esa versión.
 
-Pulsa el triángulo verde Run normal. Esta configuración ejecuta clean y la comprobación completa mediante Gradle. Exporta los datos de esa misma ejecución; no depende de la configuración temporal anterior de pruebas.
-
-Alternativa desde PowerShell en APP:
+Después, desde PowerShell en la carpeta APP:
 
 ```powershell
-.\gradlew.bat clean :app:prepararCoberturaIDE --no-daemon
+.\gradlew.bat clean testDebugUnitTest fullCoverageReport verifyFullCoverage
 ```
 
-También puedes ejecutar VERIFICAR_COBERTURA.bat.
+El primer proceso descarga las dependencias de pruebas. Robolectric ejecuta componentes Android y Compose dentro de la JVM; no necesita un emulador ni llamar a la API de producción.
 
-La tarea falla si se ejecutan menos de 73 pruebas, si hay fallos, errores u omitidas, o si la cobertura general de líneas es inferior al 80 %. El resumen local queda en cobertura-ide/RESULTADO_LOCAL.txt. Su contador corresponde a tu ejecución, no al informe adjunto del servidor.
+El informe general se encuentra en:
 
-## Mostrar esos resultados en el panel Coverage
+```text
+app/build/reports/jacoco/fullCoverageReport/html/index.html
+```
 
-1. Abre Run → Manage Coverage Reports. Según la versión puede llamarse Show Coverage Data; puedes buscar la acción con Ctrl+Shift+A.
-2. Desmarca las suites anteriores para no confundir ejecuciones.
-3. Pulsa el botón para importar y selecciona APP/cobertura-ide/TacticalTrack.exec generado por el paso anterior.
-4. Marca esa suite y pulsa Show Selected.
+Abre ese archivo desde el Explorador de Windows. Mantén toda la carpeta html para conservar sus enlaces y estilos.
 
-En versiones que admitan XML también puedes importar APP/cobertura-ide/TacticalTrack.xml.
+## Interpretar el resultado
 
-La importación es la función oficial del IDE para mostrar datos externos en su panel. Los archivos se copian directamente de JaCoCo; no se editan sus contadores ni se eliminan paquetes de la app. El informe general incluye pantallas, navegación, persistencia y adaptadores. Las métricas LINE y BRANCH son diferentes.
+La comprobación verifyFullCoverage exige al menos 80 % de líneas ejecutables en el alcance general. El informe incluye pantallas, navegación, persistencia y adaptadores Android. También muestra métodos, instrucciones y ramas, que son métricas diferentes.
 
-Si el resumen local dice 73 pruebas y más de 80 % de líneas pero el panel sigue en 28 %, el panel no está representando esos mismos datos correctamente. En ese caso conserva RESULTADO_LOCAL.txt y la ventana de suites seleccionadas para diagnosticar la importación; no se debe afirmar que el panel está corregido hasta comprobarlo.
+La instrumentación y los filtros internos de JaCoCo difieren de los del motor de cobertura de IntelliJ. Sus denominadores pueden ser distintos. No se debe comparar un porcentaje de líneas con uno de ramas ni presentar el antiguo informe filtrado como cobertura de toda la app.
 
-## Documentación
+La tarea logicCoverageReport permanece para comparar la lógica seleccionada anteriormente, pero no es el informe usado para aprobar el mínimo general.
 
-https://www.jetbrains.com/help/idea/code-coverage.html
+Si una prueba falla, consulta app/build/reports/tests/testDebugUnitTest/index.html. No debe declararse aprobada una entrega solo porque su cobertura supera el umbral.

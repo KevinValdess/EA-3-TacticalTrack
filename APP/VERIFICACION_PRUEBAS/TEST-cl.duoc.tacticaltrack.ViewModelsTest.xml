@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="cl.duoc.tacticaltrack.ViewModelsTest" tests="8" skipped="0" failures="0" errors="0" timestamp="2026-11-24T04:19:32" hostname="runnervm0hi8g" time="1.054">
+  <properties/>
+  <testcase name="successfulSaveBlocksDoubleTap" classname="cl.duoc.tacticaltrack.ViewModelsTest" time="0.634"/>
+  <testcase name="detailsRepresentFoundAndNotFound" classname="cl.duoc.tacticaltrack.ViewModelsTest" time="0.013"/>
+  <testcase name="notificationNavigationRequiresSuccessfulFetch" classname="cl.duoc.tacticaltrack.ViewModelsTest" time="0.01"/>
+  <testcase name="remoteOperationsSurfaceErrorsAndSuccess" classname="cl.duoc.tacticaltrack.ViewModelsTest" time="0.012"/>
+  <testcase name="presenceHandlesMissingPointInsideAndOutsideRadius" classname="cl.duoc.tacticaltrack.ViewModelsTest" time="0.178"/>
+  <testcase name="formValidationAndFieldChanges" classname="cl.duoc.tacticaltrack.ViewModelsTest" time="0.005"/>
+  <testcase name="savingRequiresFormPhotoAndLocation" classname="cl.duoc.tacticaltrack.ViewModelsTest" time="0.015"/>
+  <testcase name="saveErrorRetainsRequestKeyForRetry" classname="cl.duoc.tacticaltrack.ViewModelsTest" time="0.186"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

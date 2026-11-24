@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>EncryptedSessionTokenStore.kt</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">app</a> &gt; <a href="index.source.html" class="el_package">cl.duoc.tacticaltrack.data.local</a> &gt; <span class="el_source">EncryptedSessionTokenStore.kt</span></div><h1>EncryptedSessionTokenStore.kt</h1><pre class="source lang-java linenums">package cl.duoc.tacticaltrack.data.local
+
+import android.content.Context
+import android.security.keystore.KeyGenParameterSpec
+import android.security.keystore.KeyProperties
+import android.util.Base64
+import cl.duoc.tacticaltrack.data.repository.SessionTokenStore
+import java.security.KeyStore
+import javax.crypto.Cipher
+import javax.crypto.KeyGenerator
+import javax.crypto.SecretKey
+import javax.crypto.spec.GCMParameterSpec
+
+<span class="fc" id="L14">class EncryptedSessionTokenStore(context: Context) : SessionTokenStore {</span>
+<span class="fc" id="L15">    private val preferences = context.getSharedPreferences(&quot;auth_session&quot;, Context.MODE_PRIVATE)</span>
+<span class="fc" id="L16">    private val alias = &quot;tacticaltrack_session&quot;</span>
+
+    @Synchronized override fun read(): String? {
+<span class="fc bfc" id="L19" title="All 2 branches covered.">        val value = preferences.getString(&quot;token&quot;, null) ?: return null</span>
+<span class="fc" id="L20">        return try {</span>
+<span class="fc" id="L21">            val parts = value.split(&quot;:&quot;, limit = 2)</span>
+<span class="fc" id="L22">            val cipher = Cipher.getInstance(&quot;AES/GCM/NoPadding&quot;)</span>
+<span class="nc" id="L23">            cipher.init(Cipher.DECRYPT_MODE, key(), GCMParameterSpec(128, Base64.decode(parts[0], Base64.NO_WRAP)))</span>
+<span class="nc" id="L24">            String(cipher.doFinal(Base64.decode(parts[1], Base64.NO_WRAP)), Charsets.UTF_8)</span>
+<span class="fc" id="L25">        } catch (_: Exception) {</span>
+<span class="fc" id="L26">            clear()</span>
+<span class="fc" id="L27">            null</span>
+        }
+    }
+
+    @Synchronized override fun write(token: String) {
+<span class="nc" id="L32">        val cipher = Cipher.getInstance(&quot;AES/GCM/NoPadding&quot;)</span>
+<span class="nc" id="L33">        cipher.init(Cipher.ENCRYPT_MODE, key())</span>
+<span class="nc" id="L34">        val encrypted = cipher.doFinal(token.toByteArray(Charsets.UTF_8))</span>
+<span class="nc bnc" id="L35" title="All 2 branches missed.">        check(preferences.edit().putString(&quot;token&quot;,</span>
+<span class="nc" id="L36">            Base64.encodeToString(cipher.iv, Base64.NO_WRAP) + &quot;:&quot; + Base64.encodeToString(encrypted, Base64.NO_WRAP)</span>
+<span class="nc" id="L37">        ).commit()) { &quot;No se pudo guardar la sesión.&quot; }</span>
+<span class="nc" id="L38">    }</span>
+
+    @Synchronized override fun clear() {
+<span class="fc" id="L41">        preferences.edit().clear().commit()</span>
+<span class="fc" id="L42">    }</span>
+
+    private fun key(): SecretKey {
+<span class="nc" id="L45">        val store = KeyStore.getInstance(&quot;AndroidKeyStore&quot;).apply { load(null) }</span>
+<span class="nc bnc" id="L46" title="All 4 branches missed.">        (store.getKey(alias, null) as? SecretKey)?.let { return it }</span>
+<span class="nc" id="L47">        return KeyGenerator.getInstance(KeyProperties.KEY_ALGORITHM_AES, &quot;AndroidKeyStore&quot;).apply {</span>
+<span class="nc" id="L48">            init(KeyGenParameterSpec.Builder(alias, KeyProperties.PURPOSE_ENCRYPT or KeyProperties.PURPOSE_DECRYPT)</span>
+<span class="nc" id="L49">                .setBlockModes(KeyProperties.BLOCK_MODE_GCM)</span>
+<span class="nc" id="L50">                .setEncryptionPaddings(KeyProperties.ENCRYPTION_PADDING_NONE).build())</span>
+<span class="nc" id="L51">        }.generateKey()</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

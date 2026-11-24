@@ -1,0 +1,212 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > WeatherCardKt</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">cl.duoc.tacticaltrack.ui.components</a>
+</div>
+
+<h1>Coverage Summary for Class: WeatherCardKt (cl.duoc.tacticaltrack.ui.components)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">WeatherCardKt</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (4/4)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (6/6)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">WeatherCardKt$WeatherCard$1$1</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">WeatherCardKt$WeatherCard$2</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (4/4)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (12/12)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (3/3)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (8/8)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (19/19)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package cl.duoc.tacticaltrack.ui.components
+&nbsp;
+&nbsp;import androidx.compose.foundation.layout.*
+&nbsp;import androidx.compose.material3.*
+&nbsp;import androidx.compose.runtime.*
+&nbsp;import androidx.compose.ui.Modifier
+&nbsp;import androidx.compose.ui.unit.dp
+&nbsp;import androidx.lifecycle.compose.collectAsStateWithLifecycle
+&nbsp;import androidx.lifecycle.viewmodel.compose.viewModel
+&nbsp;import cl.duoc.tacticaltrack.viewmodel.WeatherState
+&nbsp;import cl.duoc.tacticaltrack.viewmodel.WeatherViewModel
+&nbsp;
+&nbsp;@Composable
+<b class="fc">&nbsp;fun WeatherCard(latitude: Double, longitude: Double) {</b>
+<b class="fc">&nbsp;    val vm: WeatherViewModel = viewModel(factory = WeatherViewModel.Factory())</b>
+<b class="fc">&nbsp;    val state by vm.state.collectAsStateWithLifecycle()</b>
+<b class="fc">&nbsp;    LaunchedEffect(latitude, longitude) { vm.load(latitude, longitude) }</b>
+<b class="fc">&nbsp;    Card(Modifier.fillMaxWidth()) {</b>
+<b class="fc">&nbsp;        Column(Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {</b>
+<b class="fc">&nbsp;            Text(&quot;Clima actual en el lugar de la visita&quot;, style = MaterialTheme.typography.titleMedium)</b>
+<b class="fc">&nbsp;            when (val current = state) {</b>
+<b class="fc">&nbsp;                WeatherState.Loading -&gt; Text(&quot;Consultando clima…&quot;)</b>
+<b class="fc">&nbsp;                WeatherState.Error -&gt; {</b>
+<b class="fc">&nbsp;                    Text(&quot;No se pudo consultar el clima. Puedes continuar con la visita.&quot;)</b>
+<b class="fc">&nbsp;                    TextButton(onClick = { vm.load(latitude, longitude) }) { Text(&quot;Reintentar&quot;) }</b>
+&nbsp;                }
+<b class="fc">&nbsp;                is WeatherState.Ready -&gt; {</b>
+<b class="fc">&nbsp;                    Text(&quot;${current.weather.temperature} °C · Código WMO ${current.weather.code}&quot;)</b>
+<b class="fc">&nbsp;                    Text(&quot;Hora del dato: ${current.weather.time}&quot;)</b>
+&nbsp;                }
+&nbsp;            }
+<b class="fc">&nbsp;            Text(&quot;Fuente: Open-Meteo · Datos actuales de referencia&quot;, style = MaterialTheme.typography.bodySmall)</b>
+<b class="fc">&nbsp;        }</b>
+&nbsp;    }
+<b class="fc">&nbsp;}</b>
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2026-11-24 08:54</div>
+</div>
+</body>
+</html>

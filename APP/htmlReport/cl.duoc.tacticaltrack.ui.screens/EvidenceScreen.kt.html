@@ -1,0 +1,277 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>EvidenceScreen.kt</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">app</a> &gt; <a href="index.source.html" class="el_package">cl.duoc.tacticaltrack.ui.screens</a> &gt; <span class="el_source">EvidenceScreen.kt</span></div><h1>EvidenceScreen.kt</h1><pre class="source lang-java linenums">package cl.duoc.tacticaltrack.ui.screens
+
+import android.Manifest
+import android.content.pm.PackageManager
+import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.CameraAlt
+import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.Image
+import androidx.compose.material.icons.filled.LocationOn
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Button
+import androidx.compose.material3.Card
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.dp
+import androidx.core.content.ContextCompat
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import cl.duoc.tacticaltrack.util.copyImageToInternalStorage
+import cl.duoc.tacticaltrack.util.createVisitImageUri
+import cl.duoc.tacticaltrack.util.hasLocationPermission
+import cl.duoc.tacticaltrack.util.requestCurrentLocation
+import cl.duoc.tacticaltrack.viewmodel.VisitViewModel
+import coil.compose.AsyncImage
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun EvidenceScreen(
+    viewModel: VisitViewModel,
+    onBack: () -&gt; Unit,
+    onSaved: (Long) -&gt; Unit
+<span class="pc bpc" id="L61" title="11 of 18 branches missed.">) {</span>
+<span class="fc" id="L62">    val context = LocalContext.current</span>
+<span class="fc" id="L63">    val state by viewModel.form.collectAsStateWithLifecycle()</span>
+<span class="pc" id="L64">    var pendingCameraUri by remember { mutableStateOf&lt;Uri?&gt;(null) }</span>
+
+<span class="fc" id="L66">    val cameraLauncher = rememberLauncherForActivityResult(</span>
+<span class="fc" id="L67">        ActivityResultContracts.TakePicture()</span>
+<span class="fc" id="L68">    ) { success -&gt;</span>
+<span class="nc bnc" id="L69" title="All 2 branches missed.">        if (success) {</span>
+<span class="nc bnc" id="L70" title="All 2 branches missed.">            pendingCameraUri?.let { viewModel.setPhoto(it.toString()) }</span>
+        }
+<span class="nc" id="L72">    }</span>
+
+    fun openCamera() {
+<span class="nc" id="L75">        val uri = createVisitImageUri(context)</span>
+<span class="nc" id="L76">        pendingCameraUri = uri</span>
+<span class="nc" id="L77">        cameraLauncher.launch(uri)</span>
+<span class="nc" id="L78">    }</span>
+
+<span class="fc" id="L80">    val cameraPermissionLauncher = rememberLauncherForActivityResult(</span>
+<span class="fc" id="L81">        ActivityResultContracts.RequestPermission()</span>
+<span class="fc" id="L82">    ) { granted -&gt;</span>
+<span class="nc bnc" id="L83" title="All 2 branches missed.">        if (granted) openCamera()</span>
+<span class="nc" id="L84">    }</span>
+
+<span class="fc" id="L86">    val galleryLauncher = rememberLauncherForActivityResult(</span>
+<span class="fc" id="L87">        ActivityResultContracts.GetContent()</span>
+<span class="fc" id="L88">    ) { uri -&gt;</span>
+<span class="nc bnc" id="L89" title="All 2 branches missed.">        uri?.let {</span>
+<span class="nc bnc" id="L90" title="All 2 branches missed.">            copyImageToInternalStorage(context, it)?.let { localUri -&gt;</span>
+<span class="nc" id="L91">                viewModel.setPhoto(localUri.toString())</span>
+<span class="nc" id="L92">            }</span>
+<span class="nc" id="L93">        }</span>
+<span class="nc" id="L94">    }</span>
+
+    fun locate() {
+<span class="nc" id="L97">        viewModel.setLocating(true)</span>
+<span class="nc" id="L98">        requestCurrentLocation(</span>
+<span class="nc" id="L99">            context = context,</span>
+<span class="nc" id="L100">            onSuccess = viewModel::setLocation,</span>
+<span class="nc" id="L101">            onError = viewModel::setLocationError</span>
+        )
+<span class="nc" id="L103">    }</span>
+
+<span class="fc" id="L105">    val locationPermissionLauncher = rememberLauncherForActivityResult(</span>
+<span class="fc" id="L106">        ActivityResultContracts.RequestMultiplePermissions()</span>
+<span class="fc" id="L107">    ) { result -&gt;</span>
+<span class="nc bnc" id="L108" title="All 2 branches missed.">        val granted = result[Manifest.permission.ACCESS_FINE_LOCATION] == true ||</span>
+<span class="nc bnc" id="L109" title="All 2 branches missed.">            result[Manifest.permission.ACCESS_COARSE_LOCATION] == true</span>
+
+<span class="nc bnc" id="L111" title="All 2 branches missed.">        if (granted) locate()</span>
+<span class="nc" id="L112">        else viewModel.setLocationError(&quot;Permiso de ubicación rechazado.&quot;)</span>
+<span class="nc" id="L113">    }</span>
+
+<span class="pc bpc" id="L115" title="1 of 2 branches missed.">    Scaffold(</span>
+<span class="fc" id="L116">        topBar = {</span>
+<span class="pc bpc" id="L117" title="5 of 8 branches missed.">            TopAppBar(</span>
+<span class="pc bpc" id="L118" title="5 of 8 branches missed.">                title = { Text(&quot;Evidencia de visita&quot;) },</span>
+<span class="fc" id="L119">                navigationIcon = {</span>
+<span class="pc bpc" id="L120" title="5 of 8 branches missed.">                    IconButton(onClick = onBack) {</span>
+<span class="pc bpc" id="L121" title="4 of 8 branches missed.">                        Icon(Icons.Default.ArrowBack, contentDescription = &quot;Volver&quot;)</span>
+<span class="pc" id="L122">                    }</span>
+<span class="fc" id="L123">                }</span>
+<span class="nc" id="L124">            )</span>
+<span class="fc" id="L125">        }</span>
+<span class="fc" id="L126">    ) { innerPadding -&gt;</span>
+<span class="pc bpc" id="L127" title="4 of 6 branches missed.">        Column(</span>
+<span class="fc" id="L128">            modifier = Modifier</span>
+<span class="fc" id="L129">                .fillMaxSize()</span>
+<span class="fc" id="L130">                .padding(innerPadding)</span>
+<span class="fc" id="L131">                .verticalScroll(rememberScrollState())</span>
+<span class="fc" id="L132">                .padding(16.dp),</span>
+<span class="fc" id="L133">            verticalArrangement = Arrangement.spacedBy(14.dp)</span>
+        ) {
+<span class="fc" id="L135">            Text(&quot;2. Evidencia fotográfica&quot;, style = MaterialTheme.typography.titleLarge)</span>
+
+<span class="fc bfc" id="L137" title="All 4 branches covered.">            if (state.photoUri.isNotBlank()) {</span>
+<span class="fc" id="L138">                AsyncImage(</span>
+<span class="fc" id="L139">                    model = state.photoUri,</span>
+<span class="fc" id="L140">                    contentDescription = &quot;Evidencia de la visita&quot;,</span>
+<span class="fc" id="L141">                    contentScale = ContentScale.Crop,</span>
+<span class="fc" id="L142">                    modifier = Modifier</span>
+<span class="fc" id="L143">                        .fillMaxWidth()</span>
+<span class="fc" id="L144">                        .height(230.dp)</span>
+<span class="fc" id="L145">                        .clip(RoundedCornerShape(16.dp))</span>
+                )
+            }
+
+<span class="fc" id="L149">            Button(</span>
+<span class="fc" id="L150">                onClick = {</span>
+<span class="nc bnc" id="L151" title="All 2 branches missed.">                    val granted = ContextCompat.checkSelfPermission(</span>
+<span class="nc" id="L152">                        context,</span>
+<span class="nc" id="L153">                        Manifest.permission.CAMERA</span>
+                    ) == PackageManager.PERMISSION_GRANTED
+
+<span class="nc bnc" id="L156" title="All 2 branches missed.">                    if (granted) openCamera()</span>
+<span class="nc" id="L157">                    else cameraPermissionLauncher.launch(Manifest.permission.CAMERA)</span>
+<span class="nc" id="L158">                },</span>
+<span class="fc" id="L159">                modifier = Modifier.fillMaxWidth()</span>
+<span class="fc" id="L160">            ) {</span>
+<span class="pc bpc" id="L161" title="4 of 6 branches missed.">                Icon(Icons.Default.CameraAlt, contentDescription = null)</span>
+<span class="pc bpc" id="L162" title="1 of 2 branches missed.">                Text(&quot;  Tomar fotografía&quot;)</span>
+<span class="fc" id="L163">            }</span>
+
+<span class="fc" id="L165">            OutlinedButton(</span>
+<span class="pc" id="L166">                onClick = { galleryLauncher.launch(&quot;image/*&quot;) },</span>
+<span class="fc" id="L167">                modifier = Modifier.fillMaxWidth()</span>
+<span class="fc" id="L168">            ) {</span>
+<span class="pc bpc" id="L169" title="4 of 6 branches missed.">                Icon(Icons.Default.Image, contentDescription = null)</span>
+<span class="pc bpc" id="L170" title="1 of 2 branches missed.">                Text(&quot;  Elegir desde galería&quot;)</span>
+<span class="fc" id="L171">            }</span>
+
+<span class="fc bfc" id="L173" title="All 2 branches covered.">            state.errors.photo?.let {</span>
+<span class="fc" id="L174">                Text(it, color = MaterialTheme.colorScheme.error)</span>
+<span class="fc" id="L175">            }</span>
+
+<span class="fc" id="L177">            Text(&quot;3. Verificación de ubicación&quot;, style = MaterialTheme.typography.titleLarge)</span>
+
+<span class="fc" id="L179">            OutlinedButton(</span>
+<span class="fc" id="L180">                onClick = {</span>
+<span class="nc bnc" id="L181" title="All 2 branches missed.">                    if (hasLocationPermission(context)) {</span>
+<span class="nc" id="L182">                        locate()</span>
+                    } else {
+<span class="nc" id="L184">                        locationPermissionLauncher.launch(</span>
+                            arrayOf(
+<span class="nc" id="L186">                                Manifest.permission.ACCESS_FINE_LOCATION,</span>
+<span class="nc" id="L187">                                Manifest.permission.ACCESS_COARSE_LOCATION</span>
+                            )
+                        )
+                    }
+<span class="nc" id="L191">                },</span>
+<span class="fc bfc" id="L192" title="All 2 branches covered.">                enabled = !state.isLocating,</span>
+<span class="fc" id="L193">                modifier = Modifier.fillMaxWidth()</span>
+<span class="fc" id="L194">            ) {</span>
+<span class="pc bpc" id="L195" title="2 of 8 branches missed.">                if (state.isLocating) {</span>
+<span class="fc" id="L196">                    CircularProgressIndicator(</span>
+<span class="fc" id="L197">                        modifier = Modifier.height(20.dp),</span>
+<span class="fc" id="L198">                        strokeWidth = 2.dp</span>
+                    )
+<span class="fc" id="L200">                    Text(&quot;  Obteniendo ubicación...&quot;)</span>
+<span class="pc bpc" id="L201" title="1 of 2 branches missed.">                } else {</span>
+<span class="fc" id="L202">                    Icon(Icons.Default.LocationOn, contentDescription = null)</span>
+<span class="fc" id="L203">                    Text(&quot;  Registrar ubicación GPS&quot;)</span>
+<span class="nc" id="L204">                }</span>
+<span class="fc" id="L205">            }</span>
+
+<span class="pc bpc" id="L207" title="1 of 4 branches missed.">            if (state.latitude != null &amp;&amp; state.longitude != null) {</span>
+<span class="fc" id="L208">                Card(Modifier.fillMaxWidth()) {</span>
+<span class="pc bpc" id="L209" title="4 of 6 branches missed.">                    Column(Modifier.padding(16.dp)) {</span>
+<span class="fc" id="L210">                        Text(&quot;Latitud: ${&quot;%.6f&quot;.format(state.latitude)}&quot;)</span>
+<span class="fc" id="L211">                        Text(&quot;Longitud: ${&quot;%.6f&quot;.format(state.longitude)}&quot;)</span>
+<span class="pc bpc" id="L212" title="1 of 2 branches missed.">                        state.locationAccuracyMeters?.let {</span>
+<span class="fc" id="L213">                            Text(&quot;Precisión aproximada: ${&quot;%.1f&quot;.format(it)} m&quot;)</span>
+<span class="fc" id="L214">                        }</span>
+<span class="pc bpc" id="L215" title="1 of 2 branches missed.">                        state.distanceToPointMeters?.let {</span>
+<span class="fc" id="L216">                            Text(&quot;Distancia al punto: ${&quot;%.1f&quot;.format(it)} m&quot;)</span>
+<span class="fc" id="L217">                        }</span>
+<span class="fc" id="L218">                        Text(</span>
+<span class="fc bfc" id="L219" title="All 2 branches covered.">                            if (state.presenceVerified) {</span>
+<span class="fc" id="L220">                                &quot;Resultado: presencia compatible&quot;</span>
+                            } else {
+<span class="fc" id="L222">                                &quot;Resultado: fuera del radio configurado&quot;</span>
+                            },
+<span class="fc" id="L224">                            style = MaterialTheme.typography.titleSmall</span>
+                        )
+<span class="pc" id="L226">                    }</span>
+<span class="fc" id="L227">                }</span>
+            }
+
+<span class="fc bfc" id="L230" title="All 4 branches covered.">            if (state.locationMessage.isNotBlank()) {</span>
+<span class="fc" id="L231">                Text(</span>
+<span class="fc" id="L232">                    state.locationMessage,</span>
+<span class="fc bfc" id="L233" title="All 2 branches covered.">                    color = if (state.presenceVerified) {</span>
+<span class="fc" id="L234">                        MaterialTheme.colorScheme.primary</span>
+<span class="fc" id="L235">                    } else {</span>
+<span class="fc" id="L236">                        MaterialTheme.colorScheme.error</span>
+                    }
+                )
+            }
+
+<span class="fc bfc" id="L241" title="All 2 branches covered.">            state.errors.location?.let {</span>
+<span class="fc" id="L242">                Text(it, color = MaterialTheme.colorScheme.error)</span>
+<span class="fc" id="L243">            }</span>
+
+<span class="fc" id="L245">            AnimatedVisibility(</span>
+<span class="fc" id="L246">                visible = state.saveSuccess,</span>
+<span class="fc" id="L247">                enter = fadeIn()</span>
+<span class="fc" id="L248">            ) {</span>
+<span class="pc bpc" id="L249" title="1 of 2 branches missed.">                Text(&quot;Visita guardada correctamente en Room.&quot;)</span>
+<span class="fc" id="L250">            }</span>
+
+<span class="fc" id="L252">            Button(</span>
+<span class="fc" id="L253">                onClick = { viewModel.saveVisit(onSaved) },</span>
+<span class="fc bfc" id="L254" title="All 2 branches covered.">                enabled = !state.isSaving,</span>
+<span class="fc" id="L255">                modifier = Modifier.fillMaxWidth()</span>
+<span class="fc" id="L256">            ) {</span>
+<span class="pc bpc" id="L257" title="1 of 8 branches missed.">                if (state.isSaving) {</span>
+<span class="fc" id="L258">                    CircularProgressIndicator(</span>
+<span class="fc" id="L259">                        modifier = Modifier.height(20.dp),</span>
+<span class="fc" id="L260">                        strokeWidth = 2.dp</span>
+                    )
+<span class="fc" id="L262">                    Text(&quot;  Guardando...&quot;)</span>
+<span class="pc bpc" id="L263" title="1 of 2 branches missed.">                } else {</span>
+<span class="fc" id="L264">                    Icon(Icons.Default.CheckCircle, contentDescription = null)</span>
+<span class="fc" id="L265">                    Text(&quot;  Guardar visita&quot;)</span>
+<span class="fc" id="L266">                }</span>
+<span class="fc" id="L267">            }</span>
+
+<span class="fc" id="L269">            Text(</span>
+<span class="fc" id="L270">                &quot;La ubicación se compara con el punto de venta usando un radio de 150 metros.&quot;,</span>
+<span class="fc" id="L271">                style = MaterialTheme.typography.bodySmall</span>
+            )
+<span class="pc" id="L273">        }</span>
+<span class="fc" id="L274">    }</span>
+<span class="pc bpc" id="L275" title="1 of 2 branches missed.">}</span>
+
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

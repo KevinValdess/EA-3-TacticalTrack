@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>AuthUser.kt</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">app</a> &gt; <a href="index.source.html" class="el_package">cl.duoc.tacticaltrack.model</a> &gt; <span class="el_source">AuthUser.kt</span></div><h1>AuthUser.kt</h1><pre class="source lang-java linenums">package cl.duoc.tacticaltrack.model
+
+<span class="fc" id="L3">data class AuthUser(</span>
+<span class="fc" id="L4">    val id: Long,</span>
+<span class="fc" id="L5">    val email: String,</span>
+<span class="fc" id="L6">    val name: String,</span>
+<span class="fc" id="L7">    val role: String,</span>
+<span class="pc" id="L8">    val enabled: Boolean,</span>
+<span class="fc" id="L9">    val supervisorId: String?</span>
+) {
+    val displayRole: String
+<span class="fc" id="L12">        get() = when (role) {</span>
+<span class="fc bfc" id="L13" title="All 2 branches covered.">            &quot;SUPERVISOR&quot; -&gt; &quot;Supervisor&quot;</span>
+<span class="fc bfc" id="L14" title="All 2 branches covered.">            &quot;OPERARIO&quot; -&gt; &quot;Operario&quot;</span>
+<span class="fc" id="L15">            else -&gt; error(&quot;Rol de usuario no reconocido.&quot;)</span>
+<span class="fc" id="L16">        }</span>
+
+    fun validated(): AuthUser {
+<span class="pc bpc" id="L19" title="5 of 14 branches missed.">        require(enabled &amp;&amp; id &gt; 0 &amp;&amp; name.isNotBlank() &amp;&amp; email.isNotBlank())</span>
+<span class="fc bfc" id="L20" title="All 6 branches covered.">        require(role == &quot;OPERARIO&quot; || role == &quot;SUPERVISOR&quot;)</span>
+<span class="pc bpc" id="L21" title="1 of 10 branches missed.">        require(role != &quot;SUPERVISOR&quot; || !supervisorId.isNullOrBlank())</span>
+<span class="fc" id="L22">        return this</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

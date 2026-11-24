@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>VisitDetailScreen.kt</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">app</a> &gt; <a href="index.source.html" class="el_package">cl.duoc.tacticaltrack.ui.screens</a> &gt; <span class="el_source">VisitDetailScreen.kt</span></div><h1>VisitDetailScreen.kt</h1><pre class="source lang-java linenums">package cl.duoc.tacticaltrack.ui.screens
+
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.*
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
+import androidx.compose.runtime.*
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import cl.duoc.tacticaltrack.ui.components.VisitStatusChips
+import cl.duoc.tacticaltrack.viewmodel.VisitViewModel
+import cl.duoc.tacticaltrack.viewmodel.VisitDetailUiState
+import coil.compose.AsyncImage
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun VisitDetailScreen(
+    visitId: Long,
+    viewModel: VisitViewModel,
+    onBack: () -&gt; Unit
+<span class="pc bpc" id="L45" title="4 of 18 branches missed.">) {</span>
+<span class="fc bfc" id="L46" title="All 2 branches covered.">    val remote by viewModel.remote.collectAsStateWithLifecycle()</span>
+<span class="fc bfc" id="L47" title="All 2 branches covered.">    var editing by remember(visitId) { mutableStateOf(false) }</span>
+<span class="fc" id="L48">    var deleting by remember(visitId) { mutableStateOf(false) }</span>
+<span class="fc bfc" id="L49" title="All 2 branches covered.">    val detailState = key(visitId, viewModel) {</span>
+<span class="fc" id="L50">        val flow = remember(visitId, viewModel) { viewModel.observeVisitDetail(visitId) }</span>
+<span class="fc" id="L51">        val state by flow.collectAsStateWithLifecycle(initialValue = VisitDetailUiState.Loading)</span>
+<span class="fc" id="L52">        state</span>
+    }
+
+<span class="pc bpc" id="L55" title="1 of 2 branches missed.">    Scaffold(</span>
+<span class="fc" id="L56">        topBar = {</span>
+<span class="pc bpc" id="L57" title="5 of 8 branches missed.">            TopAppBar(</span>
+<span class="pc bpc" id="L58" title="5 of 8 branches missed.">                title = { Text(&quot;Detalle de visita&quot;) },</span>
+<span class="fc" id="L59">                navigationIcon = {</span>
+<span class="pc bpc" id="L60" title="5 of 8 branches missed.">                    IconButton(onClick = onBack) {</span>
+<span class="pc bpc" id="L61" title="4 of 8 branches missed.">                        Icon(Icons.Default.ArrowBack, contentDescription = &quot;Volver&quot;)</span>
+<span class="pc" id="L62">                    }</span>
+<span class="fc" id="L63">                }</span>
+<span class="nc" id="L64">            )</span>
+<span class="fc" id="L65">        }</span>
+<span class="fc" id="L66">    ) { innerPadding -&gt;</span>
+<span class="pc bpc" id="L67" title="2 of 10 branches missed.">        val current = (detailState as? VisitDetailUiState.Found)?.visit</span>
+<span class="fc bfc" id="L68" title="All 2 branches covered.">        if (current == null) {</span>
+<span class="fc" id="L69">            Text(</span>
+<span class="fc bfc" id="L70" title="All 2 branches covered.">                if (detailState == VisitDetailUiState.NotFound) &quot;Visita no encontrada&quot; else &quot;Cargando visita...&quot;,</span>
+<span class="fc" id="L71">                modifier = Modifier</span>
+<span class="fc" id="L72">                    .fillMaxSize()</span>
+<span class="fc" id="L73">                    .padding(innerPadding)</span>
+<span class="fc" id="L74">                    .padding(24.dp)</span>
+            )
+<span class="pc bpc" id="L76" title="1 of 2 branches missed.">        } else {</span>
+<span class="fc" id="L77">            val date = SimpleDateFormat(</span>
+<span class="fc" id="L78">                &quot;dd/MM/yyyy HH:mm:ss&quot;,</span>
+<span class="fc" id="L79">                Locale.getDefault()</span>
+<span class="fc" id="L80">            ).format(Date(current.timestamp))</span>
+
+<span class="fc" id="L82">            Column(</span>
+<span class="fc" id="L83">                modifier = Modifier</span>
+<span class="fc" id="L84">                    .fillMaxSize()</span>
+<span class="fc" id="L85">                    .padding(innerPadding)</span>
+<span class="fc" id="L86">                    .verticalScroll(rememberScrollState())</span>
+<span class="fc" id="L87">                    .padding(16.dp),</span>
+<span class="fc" id="L88">                verticalArrangement = Arrangement.spacedBy(12.dp)</span>
+            ) {
+<span class="pc bpc" id="L90" title="1 of 2 branches missed.">                remote.error?.let { Text(it, color = MaterialTheme.colorScheme.error) }</span>
+<span class="pc bpc" id="L91" title="4 of 10 branches missed.">                Button(onClick = { editing = true }, enabled = !remote.busy) { Text(&quot;Editar visita&quot;) }</span>
+<span class="pc bpc" id="L92" title="6 of 10 branches missed.">                OutlinedButton(onClick = { deleting = true }, enabled = !remote.busy) { Text(&quot;Eliminar visita&quot;) }</span>
+<span class="fc bfc" id="L93" title="All 2 branches covered.">                if (editing) {</span>
+<span class="fc" id="L94">                    EditVisitDialog(current.equipmentStatus, current.observations, remote.busy,</span>
+<span class="fc" id="L95">                        serverError = remote.error,</span>
+<span class="fc" id="L96">                        onDismiss = { editing = false },</span>
+<span class="fc" id="L97">                        onSave = { status, observations -&gt;</span>
+<span class="pc" id="L98">                            viewModel.editVisit(visitId, status, observations) { editing = false }</span>
+<span class="fc" id="L99">                        })</span>
+                }
+<span class="fc bfc" id="L101" title="All 2 branches covered.">                if (deleting) {</span>
+<span class="pc bnc" id="L102" title="All 2 branches missed.">                    AlertDialog(onDismissRequest = { if (!remote.busy) deleting = false },</span>
+<span class="pc bpc" id="L103" title="5 of 8 branches missed.">                        title = { Text(&quot;¿Eliminar visita?&quot;) },</span>
+<span class="pc bpc" id="L104" title="4 of 6 branches missed.">                        text = { Column {</span>
+<span class="fc" id="L105">                            Text(&quot;Se eliminará del servidor. Esta acción no se puede deshacer.&quot;)</span>
+<span class="pc bpc" id="L106" title="1 of 2 branches missed.">                            remote.error?.let { Text(it, color = MaterialTheme.colorScheme.error) }</span>
+<span class="pc" id="L107">                        } },</span>
+<span class="pc bpc" id="L108" title="6 of 10 branches missed.">                        confirmButton = { TextButton(enabled = !remote.busy, onClick = {</span>
+<span class="pc" id="L109">                            viewModel.deleteVisit(visitId) { deleting = false; onBack() }</span>
+<span class="pc bpc" id="L110" title="5 of 8 branches missed.">                        }) { Text(&quot;Eliminar&quot;) } },</span>
+<span class="pc bpc" id="L111" title="11 of 18 branches missed.">                        dismissButton = { TextButton(enabled = !remote.busy, onClick = { deleting = false }) { Text(&quot;Cancelar&quot;) } })</span>
+                }
+<span class="fc" id="L113">                cl.duoc.tacticaltrack.ui.components.WeatherCard(current.latitude, current.longitude)</span>
+<span class="fc" id="L114">                Text(</span>
+<span class="fc" id="L115">                    &quot;${current.assetCode} · ${current.assetType}&quot;,</span>
+<span class="fc" id="L116">                    style = MaterialTheme.typography.headlineSmall</span>
+                )
+<span class="fc" id="L118">                VisitStatusChips(</span>
+<span class="fc" id="L119">                    current.presenceVerified,</span>
+<span class="fc" id="L120">                    current.supervisorStatus,</span>
+<span class="fc" id="L121">                    current.synced</span>
+                )
+
+<span class="fc" id="L124">                AsyncImage(</span>
+<span class="fc" id="L125">                    model = current.photoUri,</span>
+<span class="fc" id="L126">                    contentDescription = &quot;Fotografía de evidencia&quot;,</span>
+<span class="fc" id="L127">                    contentScale = ContentScale.Crop,</span>
+<span class="fc" id="L128">                    modifier = Modifier</span>
+<span class="fc" id="L129">                        .fillMaxWidth()</span>
+<span class="fc" id="L130">                        .height(240.dp)</span>
+<span class="fc" id="L131">                        .clip(RoundedCornerShape(16.dp))</span>
+                )
+
+<span class="fc" id="L134">                Card(Modifier.fillMaxWidth()) {</span>
+<span class="pc bpc" id="L135" title="4 of 6 branches missed.">                    Column(</span>
+<span class="fc" id="L136">                        Modifier.padding(16.dp),</span>
+<span class="fc" id="L137">                        verticalArrangement = Arrangement.spacedBy(5.dp)</span>
+                    ) {
+<span class="fc" id="L139">                        Text(&quot;Punto: ${current.pointName}&quot;)</span>
+<span class="fc" id="L140">                        Text(&quot;Operario: ${current.operatorName} (${current.operatorRole})&quot;)</span>
+<span class="fc" id="L141">                        Text(&quot;Fecha y hora: $date&quot;)</span>
+<span class="fc" id="L142">                        Text(&quot;Tipo de visita: ${current.visitType}&quot;)</span>
+<span class="fc" id="L143">                        Text(&quot;Estado del equipo: ${current.equipmentStatus}&quot;)</span>
+<span class="pc bpc" id="L144" title="1 of 2 branches missed.">                        Text(&quot;Observaciones: ${current.observations.ifBlank { &quot;Sin observaciones&quot; }}&quot;)</span>
+<span class="fc" id="L145">                        Text(&quot;Latitud: ${current.latitude}&quot;)</span>
+<span class="fc" id="L146">                        Text(&quot;Longitud: ${current.longitude}&quot;)</span>
+<span class="fc" id="L147">                        Text(&quot;Distancia al punto: ${&quot;%.1f&quot;.format(current.distanceToPointMeters)} m&quot;)</span>
+<span class="pc" id="L148">                    }</span>
+<span class="fc" id="L149">                }</span>
+<span class="fc" id="L150">            }</span>
+<span class="fc" id="L151">        }</span>
+<span class="fc" id="L152">    }</span>
+<span class="fc bfc" id="L153" title="All 2 branches covered.">}</span>
+
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

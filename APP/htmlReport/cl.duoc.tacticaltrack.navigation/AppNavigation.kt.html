@@ -1,0 +1,228 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>AppNavigation.kt</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">app</a> &gt; <a href="index.source.html" class="el_package">cl.duoc.tacticaltrack.navigation</a> &gt; <span class="el_source">AppNavigation.kt</span></div><h1>AppNavigation.kt</h1><pre class="source lang-java linenums">package cl.duoc.tacticaltrack.navigation
+
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Assignment
+import androidx.compose.material.icons.filled.History
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material3.Icon
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import cl.duoc.tacticaltrack.viewmodel.SessionViewModelStore
+import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
+import cl.duoc.tacticaltrack.model.AuthUser
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavDestination.Companion.hierarchy
+import androidx.navigation.NavGraph.Companion.findStartDestination
+import androidx.navigation.NavType
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
+import cl.duoc.tacticaltrack.TacticalTrackApplication
+import cl.duoc.tacticaltrack.ui.screens.EvidenceScreen
+import cl.duoc.tacticaltrack.ui.screens.HistoryScreen
+import cl.duoc.tacticaltrack.ui.screens.HomeScreen
+import cl.duoc.tacticaltrack.ui.screens.LoginScreen
+import cl.duoc.tacticaltrack.ui.screens.NewVisitScreen
+import cl.duoc.tacticaltrack.ui.screens.SupervisorScreen
+import cl.duoc.tacticaltrack.ui.screens.VisitDetailScreen
+import cl.duoc.tacticaltrack.viewmodel.LoginViewModel
+import cl.duoc.tacticaltrack.viewmodel.VisitViewModel
+
+@Composable
+fun TacticalTrackApp(
+    isExpanded: Boolean,
+<span class="fc bfc" id="L50" title="All 2 branches covered.">    pendingVisitId: Long? = null,</span>
+<span class="pc bpc" id="L51" title="1 of 2 branches missed.">    onPushConsumed: () -&gt; Unit = {}</span>
+<span class="pc bpc" id="L52" title="7 of 24 branches missed.">) {</span>
+<span class="fc" id="L53">    val context = LocalContext.current</span>
+<span class="fc" id="L54">    val app = context.applicationContext as TacticalTrackApplication</span>
+
+<span class="fc" id="L56">    val loginViewModel: LoginViewModel = viewModel(</span>
+<span class="fc" id="L57">        factory = LoginViewModel.Factory(app.preferencesRepository, app.authRepository)</span>
+    )
+<span class="fc" id="L59">    val sessionScope: SessionViewModelStore = viewModel()</span>
+<span class="fc" id="L60">    val session by loginViewModel.uiState.collectAsStateWithLifecycle()</span>
+<span class="fc" id="L61">    val user = session.user</span>
+<span class="fc" id="L62">    val lifecycleOwner = LocalLifecycleOwner.current</span>
+<span class="fc" id="L63">    DisposableEffect(lifecycleOwner, loginViewModel) {</span>
+<span class="fc" id="L64">        val observer = LifecycleEventObserver { _, event -&gt;</span>
+<span class="fc bfc" id="L65" title="All 2 branches covered.">            if (event == Lifecycle.Event.ON_RESUME) loginViewModel.restoreSession()</span>
+<span class="fc" id="L66">        }</span>
+<span class="fc" id="L67">        lifecycleOwner.lifecycle.addObserver(observer)</span>
+<span class="fc" id="L68">        onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }</span>
+    }
+<span class="pc bpc" id="L70" title="1 of 8 branches missed.">    LaunchedEffect(user?.id, user?.role, user?.supervisorId) {</span>
+<span class="fc bfc" id="L71" title="All 2 branches covered.">        if (user == null) sessionScope.clearSession()</span>
+<span class="fc bfc" id="L72" title="All 6 branches covered.">        cl.duoc.tacticaltrack.push.PushRegistration.setRole(context, user?.displayRole.orEmpty(), user?.supervisorId)</span>
+<span class="fc" id="L73">    }</span>
+<span class="fc bfc" id="L74" title="All 2 branches covered.">    if (user == null) {</span>
+<span class="pc bpc" id="L75" title="2 of 4 branches missed.">        LoginScreen(viewModel = loginViewModel)</span>
+<span class="fc" id="L76">        return</span>
+    }
+    // El almacén conserva los formularios al rotar y se limpia al cerrar sesión.
+<span class="pc bpc" id="L79" title="1 of 2 branches missed.">    CompositionLocalProvider(LocalViewModelStoreOwner provides sessionScope) {</span>
+<span class="pc bpc" id="L80" title="4 of 8 branches missed.">        SignedInApp(isExpanded, pendingVisitId, onPushConsumed, user) {</span>
+<span class="fc" id="L81">            loginViewModel.logout {</span>
+<span class="fc" id="L82">                cl.duoc.tacticaltrack.push.PushRegistration.endSession(context)</span>
+<span class="fc" id="L83">            }</span>
+<span class="pc" id="L84">        }</span>
+<span class="fc" id="L85">    }</span>
+<span class="pc bpc" id="L86" title="1 of 2 branches missed.">}</span>
+
+@Composable
+private fun SignedInApp(
+    isExpanded: Boolean,
+    pendingVisitId: Long?,
+    onPushConsumed: () -&gt; Unit,
+    user: AuthUser,
+    onLogout: () -&gt; Unit
+<span class="pc bpc" id="L95" title="7 of 26 branches missed.">) {</span>
+<span class="fc" id="L96">    val context = LocalContext.current</span>
+<span class="fc" id="L97">    val app = context.applicationContext as TacticalTrackApplication</span>
+<span class="fc" id="L98">    val visitViewModel: VisitViewModel = viewModel(</span>
+<span class="fc" id="L99">        factory = VisitViewModel.Factory(app.visitRepository, app.catalogRepository)</span>
+    )
+<span class="pc bpc" id="L101" title="1 of 4 branches missed.">    LaunchedEffect(user) { visitViewModel.setOperator(user.name, user.displayRole) }</span>
+
+<span class="fc" id="L103">    val navController = rememberNavController()</span>
+<span class="fc" id="L104">    val backStackEntry by navController.currentBackStackEntryAsState()</span>
+<span class="fc bfc" id="L105" title="All 2 branches covered.">    val currentDestination = backStackEntry?.destination</span>
+
+<span class="fc" id="L107">    val bottomRoutes = setOf(</span>
+<span class="fc" id="L108">        Screen.Home.route,</span>
+<span class="fc" id="L109">        Screen.History.route,</span>
+<span class="fc" id="L110">        Screen.Supervisor.route</span>
+    )
+<span class="fc bfc" id="L112" title="All 2 branches covered.">    val showBottomBar = currentDestination?.route in bottomRoutes</span>
+
+<span class="fc" id="L114">    val role by visitViewModel.operatorRole.collectAsStateWithLifecycle()</span>
+
+<span class="fc" id="L116">    val supervisorSession by cl.duoc.tacticaltrack.push.PushRegistration.supervisorSession.collectAsStateWithLifecycle()</span>
+<span class="pc bpc" id="L117" title="1 of 6 branches missed.">    LaunchedEffect(pendingVisitId, supervisorSession) {</span>
+<span class="fc" id="L118">        val id = pendingVisitId</span>
+<span class="pc bpc" id="L119" title="1 of 4 branches missed.">        if (id != null &amp;&amp; supervisorSession) {</span>
+<span class="fc" id="L120">            onPushConsumed()</span>
+<span class="fc" id="L121">            visitViewModel.openRemoteVisit(id) {</span>
+<span class="fc" id="L122">                navController.navigate(Screen.Detail.createRoute(id)) { launchSingleTop=true }</span>
+<span class="fc" id="L123">            }</span>
+        }
+<span class="fc" id="L125">    }</span>
+
+<span class="pc bpc" id="L127" title="1 of 2 branches missed.">    Scaffold(</span>
+<span class="fc" id="L128">        bottomBar = {</span>
+<span class="pc bpc" id="L129" title="2 of 8 branches missed.">            if (showBottomBar) {</span>
+<span class="pc bpc" id="L130" title="1 of 2 branches missed.">                NavigationBar {</span>
+<span class="pc bpc" id="L131" title="4 of 6 branches missed.">                    val items = buildList {</span>
+<span class="fc" id="L132">                        add(Triple(Screen.Home.route, &quot;Inicio&quot;, Icons.Default.Home))</span>
+<span class="fc" id="L133">                        add(Triple(Screen.History.route, &quot;Historial&quot;, Icons.Default.History))</span>
+<span class="fc bfc" id="L134" title="All 2 branches covered.">                        if (role == &quot;Supervisor&quot;) {</span>
+<span class="fc" id="L135">                            add(Triple(Screen.Supervisor.route, &quot;Supervisor&quot;, Icons.Default.Assignment))</span>
+                        }
+<span class="fc" id="L137">                    }</span>
+
+<span class="fc" id="L139">                    items.forEach { (route, label, icon) -&gt;</span>
+<span class="fc" id="L140">                        NavigationBarItem(</span>
+<span class="pc bpc" id="L141" title="2 of 6 branches missed.">                            selected = currentDestination?.hierarchy?.any {</span>
+<span class="fc" id="L142">                                it.route == route</span>
+<span class="fc" id="L143">                            } == true,</span>
+<span class="fc" id="L144">                            onClick = {</span>
+<span class="fc" id="L145">                                navController.navigate(route) {</span>
+<span class="fc" id="L146">                                    popUpTo(navController.graph.findStartDestination().id) {</span>
+<span class="fc" id="L147">                                        saveState = true</span>
+<span class="fc" id="L148">                                    }</span>
+<span class="fc" id="L149">                                    launchSingleTop = true</span>
+<span class="fc" id="L150">                                    restoreState = true</span>
+<span class="fc" id="L151">                                }</span>
+<span class="fc" id="L152">                            },</span>
+<span class="pc bpc" id="L153" title="2 of 8 branches missed.">                            icon = { Icon(icon, contentDescription = label) },</span>
+<span class="pc bpc" id="L154" title="3 of 8 branches missed.">                            label = { Text(label) }</span>
+                        )
+<span class="pc" id="L156">                    }</span>
+<span class="fc" id="L157">                }</span>
+<span class="fc" id="L158">            }</span>
+<span class="fc" id="L159">        }</span>
+<span class="fc" id="L160">    ) { scaffoldPadding -&gt;</span>
+<span class="pc bpc" id="L161" title="5 of 8 branches missed.">        NavHost(</span>
+<span class="fc" id="L162">            navController = navController,</span>
+<span class="fc" id="L163">            startDestination = Screen.Home.route,</span>
+<span class="fc" id="L164">            modifier = Modifier.padding(scaffoldPadding)</span>
+<span class="fc" id="L165">        ) {</span>
+<span class="fc" id="L166">            composable(Screen.Home.route) {</span>
+<span class="pc bpc" id="L167" title="1 of 2 branches missed.">                HomeScreen(</span>
+<span class="fc" id="L168">                    viewModel = visitViewModel,</span>
+<span class="fc" id="L169">                    isExpanded = isExpanded,</span>
+<span class="fc" id="L170">                    onLogout = onLogout,</span>
+<span class="fc" id="L171">                    onNewVisit = {</span>
+<span class="fc" id="L172">                        visitViewModel.clearForm()</span>
+<span class="fc" id="L173">                        navController.navigate(Screen.NewVisit.route)</span>
+<span class="fc" id="L174">                    }</span>
+                )
+<span class="fc" id="L176">            }</span>
+
+<span class="fc" id="L178">            composable(Screen.NewVisit.route) {</span>
+<span class="pc bpc" id="L179" title="1 of 2 branches missed.">                NewVisitScreen(</span>
+<span class="fc" id="L180">                    viewModel = visitViewModel,</span>
+<span class="fc" id="L181">                    onBack = navController::popBackStack,</span>
+<span class="pc" id="L182">                    onContinue = { navController.navigate(Screen.Evidence.route) }</span>
+                )
+<span class="fc" id="L184">            }</span>
+
+<span class="fc" id="L186">            composable(Screen.Evidence.route) {</span>
+<span class="nc bnc" id="L187" title="All 2 branches missed.">                EvidenceScreen(</span>
+<span class="nc" id="L188">                    viewModel = visitViewModel,</span>
+<span class="nc" id="L189">                    onBack = navController::popBackStack,</span>
+<span class="nc" id="L190">                    onSaved = { id -&gt;</span>
+<span class="nc" id="L191">                        navController.navigate(Screen.Detail.createRoute(id)) {</span>
+<span class="nc" id="L192">                            popUpTo(Screen.Home.route)</span>
+<span class="nc" id="L193">                        }</span>
+<span class="nc" id="L194">                    }</span>
+                )
+<span class="nc" id="L196">            }</span>
+
+<span class="fc" id="L198">            composable(Screen.History.route) {</span>
+<span class="pc bpc" id="L199" title="1 of 2 branches missed.">                HistoryScreen(</span>
+<span class="fc" id="L200">                    viewModel = visitViewModel,</span>
+<span class="fc" id="L201">                    onVisitClick = { id -&gt;</span>
+<span class="nc" id="L202">                        navController.navigate(Screen.Detail.createRoute(id))</span>
+<span class="nc" id="L203">                    }</span>
+                )
+<span class="fc" id="L205">            }</span>
+
+<span class="fc" id="L207">            composable(Screen.Supervisor.route) {</span>
+<span class="pc bpc" id="L208" title="1 of 2 branches missed.">                SupervisorScreen(viewModel = visitViewModel)</span>
+<span class="fc" id="L209">            }</span>
+
+<span class="fc" id="L211">            composable(</span>
+<span class="fc" id="L212">                route = Screen.Detail.route,</span>
+<span class="fc" id="L213">                arguments = listOf(</span>
+<span class="fc" id="L214">                    navArgument(&quot;visitId&quot;) { type = NavType.LongType }</span>
+                )
+<span class="fc" id="L216">            ) { entry -&gt;</span>
+<span class="pc bpc" id="L217" title="3 of 4 branches missed.">                val visitId = entry.arguments?.getLong(&quot;visitId&quot;) ?: return@composable</span>
+<span class="pc bpc" id="L218" title="1 of 2 branches missed.">                VisitDetailScreen(</span>
+<span class="fc" id="L219">                    visitId = visitId,</span>
+<span class="fc" id="L220">                    viewModel = visitViewModel,</span>
+<span class="fc" id="L221">                    onBack = navController::popBackStack</span>
+                )
+<span class="fc" id="L223">            }</span>
+<span class="pc" id="L224">        }</span>
+<span class="fc" id="L225">    }</span>
+<span class="pc bpc" id="L226" title="1 of 2 branches missed.">}</span>
+
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>AuthRepository.kt</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">app</a> &gt; <a href="index.source.html" class="el_package">cl.duoc.tacticaltrack.data.repository</a> &gt; <span class="el_source">AuthRepository.kt</span></div><h1>AuthRepository.kt</h1><pre class="source lang-java linenums">package cl.duoc.tacticaltrack.data.repository
+
+import cl.duoc.tacticaltrack.data.remote.AuthApi
+import cl.duoc.tacticaltrack.data.remote.LoginRequest
+import cl.duoc.tacticaltrack.model.AuthUser
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
+import retrofit2.HttpException
+import java.time.Instant
+import java.util.Locale
+
+<span class="fc" id="L15">class AuthRepository(private val api: AuthApi, private val tokens: SessionTokenStore) {</span>
+<span class="fc" id="L16">    private val mutex = Mutex()</span>
+<span class="fc" id="L17">    private val _user = MutableStateFlow&lt;AuthUser?&gt;(null)</span>
+<span class="fc" id="L18">    val user = _user.asStateFlow()</span>
+<span class="fc" id="L19">    @Volatile private var currentToken: String? = tokens.read()</span>
+
+<span class="fc" id="L21">    fun token(): String? = currentToken</span>
+
+<span class="fc" id="L23">    suspend fun login(email: String, password: String): AuthUser = mutex.withLock {</span>
+<span class="fc" id="L24">        val response = api.login(LoginRequest(email.trim().lowercase(Locale.ROOT), password))</span>
+<span class="fc" id="L25">        val user = response.user.validated()</span>
+<span class="pc bpc" id="L26" title="2 of 8 branches missed.">        require(response.tokenType.equals(&quot;Bearer&quot;, ignoreCase = true) &amp;&amp; response.accessToken.isNotBlank())</span>
+<span class="fc bfc" id="L27" title="All 2 branches covered.">        require(Instant.parse(response.expiresAt).isAfter(Instant.now())) { &quot;La sesión recibida ya venció.&quot; }</span>
+<span class="fc" id="L28">        tokens.write(response.accessToken)</span>
+<span class="fc" id="L29">        currentToken = response.accessToken</span>
+<span class="fc" id="L30">        _user.value = user</span>
+<span class="fc" id="L31">        user</span>
+<span class="fc" id="L32">    }</span>
+
+<span class="fc" id="L34">    suspend fun restore(): AuthUser? = mutex.withLock {</span>
+<span class="fc bfc" id="L35" title="All 2 branches covered.">        val token = currentToken ?: return@withLock null</span>
+<span class="fc" id="L36">        try {</span>
+<span class="fc" id="L37">            val user = api.me(&quot;Bearer $token&quot;).validated()</span>
+<span class="pc bpc" id="L38" title="1 of 2 branches missed.">            if (currentToken == token) _user.value = user</span>
+<span class="fc" id="L39">            _user.value</span>
+<span class="fc" id="L40">        } catch (error: HttpException) {</span>
+<span class="pc bpc" id="L41" title="1 of 2 branches missed.">            if (error.code() == 401) invalidate(token)</span>
+<span class="fc" id="L42">            throw error</span>
+<span class="fc" id="L43">        } catch (error: IllegalArgumentException) {</span>
+<span class="fc" id="L44">            invalidate(token)</span>
+<span class="fc" id="L45">            throw error</span>
+<span class="fc" id="L46">        }</span>
+<span class="fc" id="L47">    }</span>
+
+<span class="fc" id="L49">    suspend fun logout() = mutex.withLock {</span>
+<span class="fc" id="L50">        try {</span>
+<span class="pc bpc" id="L51" title="1 of 2 branches missed.">            currentToken?.let { api.logout(&quot;Bearer $it&quot;) }</span>
+<span class="nc" id="L52">        } catch (error: CancellationException) {</span>
+<span class="nc" id="L53">            throw error</span>
+<span class="fc" id="L54">        } catch (_: Exception) {</span>
+            // Sin conexión también se elimina la sesión de este dispositivo.
+        } finally {
+<span class="fc" id="L57">            clear()</span>
+<span class="fc" id="L58">        }</span>
+<span class="fc" id="L59">    }</span>
+
+    @Synchronized fun invalidate(rejectedToken: String) {
+<span class="fc bfc" id="L62" title="All 2 branches covered.">        if (currentToken == rejectedToken) clear()</span>
+<span class="fc" id="L63">    }</span>
+
+    @Synchronized private fun clear() {
+<span class="fc" id="L66">        currentToken = null</span>
+<span class="fc" id="L67">        tokens.clear()</span>
+<span class="fc" id="L68">        _user.value = null</span>
+<span class="fc" id="L69">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

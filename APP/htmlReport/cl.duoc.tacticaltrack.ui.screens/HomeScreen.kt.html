@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>HomeScreen.kt</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">app</a> &gt; <a href="index.source.html" class="el_package">cl.duoc.tacticaltrack.ui.screens</a> &gt; <span class="el_source">HomeScreen.kt</span></div><h1>HomeScreen.kt</h1><pre class="source lang-java linenums">package cl.duoc.tacticaltrack.ui.screens
+
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.slideInVertically
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.RowScope
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.CloudUpload
+import androidx.compose.material.icons.filled.PostAdd
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Button
+import androidx.compose.material3.Card
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import cl.duoc.tacticaltrack.ui.components.StatCard
+import cl.duoc.tacticaltrack.viewmodel.VisitViewModel
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun HomeScreen(
+    viewModel: VisitViewModel,
+    isExpanded: Boolean,
+    onNewVisit: () -&gt; Unit,
+    onLogout: () -&gt; Unit
+<span class="pc bpc" id="L43" title="6 of 22 branches missed.">) {</span>
+<span class="fc" id="L44">    val visits by viewModel.visits.collectAsStateWithLifecycle()</span>
+<span class="fc" id="L45">    val operator by viewModel.operatorName.collectAsStateWithLifecycle()</span>
+<span class="fc" id="L46">    val role by viewModel.operatorRole.collectAsStateWithLifecycle()</span>
+
+<span class="fc" id="L48">    val remote by viewModel.remote.collectAsStateWithLifecycle()</span>
+<span class="pc bpc" id="L49" title="1 of 2 branches missed.">    val pendingSync = visits.count { !it.synced }</span>
+<span class="fc" id="L50">    val verified = visits.count { it.presenceVerified }</span>
+
+<span class="pc bpc" id="L52" title="1 of 2 branches missed.">    Scaffold(</span>
+<span class="fc" id="L53">        topBar = {</span>
+<span class="pc bpc" id="L54" title="5 of 8 branches missed.">            TopAppBar(</span>
+<span class="pc bpc" id="L55" title="5 of 8 branches missed.">                title = { Text(&quot;TacticalTrack&quot;) },</span>
+<span class="pc bpc" id="L56" title="8 of 16 branches missed.">                actions = { androidx.compose.material3.TextButton(onClick = onLogout) { Text(&quot;Cerrar sesión&quot;) } }</span>
+<span class="nc" id="L57">            )</span>
+<span class="fc" id="L58">        }</span>
+<span class="fc" id="L59">    ) { innerPadding -&gt;</span>
+<span class="pc bpc" id="L60" title="2 of 6 branches missed.">        Column(</span>
+<span class="fc" id="L61">            modifier = Modifier</span>
+<span class="fc" id="L62">                .fillMaxSize()</span>
+<span class="fc" id="L63">                .padding(innerPadding)</span>
+<span class="fc" id="L64">                .verticalScroll(rememberScrollState())</span>
+<span class="fc" id="L65">                .padding(16.dp),</span>
+<span class="fc" id="L66">            verticalArrangement = Arrangement.spacedBy(16.dp)</span>
+        ) {
+<span class="fc bfc" id="L68" title="All 2 branches covered.">            if(role==&quot;Supervisor&quot;) cl.duoc.tacticaltrack.push.PushSettingsCard()</span>
+<span class="fc" id="L69">            Text(</span>
+<span class="fc" id="L70">                &quot;Hola, $operator · $role&quot;,</span>
+<span class="fc" id="L71">                style = MaterialTheme.typography.titleLarge</span>
+            )
+
+<span class="fc bfc" id="L74" title="All 2 branches covered.">            if (isExpanded) {</span>
+<span class="fc" id="L75">                Row(</span>
+<span class="fc" id="L76">                    modifier = Modifier.fillMaxWidth(),</span>
+<span class="fc" id="L77">                    horizontalArrangement = Arrangement.spacedBy(12.dp)</span>
+                ) {
+<span class="fc" id="L79">                    StatCard(&quot;Visitas&quot;, visits.size.toString(), Modifier.weight(1f))</span>
+<span class="fc" id="L80">                    StatCard(&quot;GPS verificadas&quot;, verified.toString(), Modifier.weight(1f))</span>
+<span class="fc" id="L81">                    StatCard(&quot;Sin sincronizar&quot;, pendingSync.toString(), Modifier.weight(1f))</span>
+<span class="fc" id="L82">                }</span>
+<span class="fc" id="L83">            } else {</span>
+<span class="fc" id="L84">                Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {</span>
+<span class="fc" id="L85">                    StatCard(&quot;Visitas registradas&quot;, visits.size.toString(), Modifier.fillMaxWidth())</span>
+<span class="fc" id="L86">                    StatCard(&quot;GPS verificadas&quot;, verified.toString(), Modifier.fillMaxWidth())</span>
+<span class="fc" id="L87">                    StatCard(&quot;Visitas sin sincronizar&quot;, pendingSync.toString(), Modifier.fillMaxWidth())</span>
+<span class="fc" id="L88">                }</span>
+            }
+
+<span class="fc" id="L91">            AnimatedVisibility(</span>
+<span class="fc bfc" id="L92" title="All 2 branches covered.">                visible = pendingSync &gt; 0,</span>
+<span class="fc" id="L93">                enter = fadeIn() + slideInVertically()</span>
+<span class="fc" id="L94">            ) {</span>
+<span class="pc bpc" id="L95" title="1 of 2 branches missed.">                Card(Modifier.fillMaxWidth()) {</span>
+<span class="pc bpc" id="L96" title="4 of 6 branches missed.">                    Column(Modifier.padding(16.dp)) {</span>
+<span class="fc" id="L97">                        Text(</span>
+<span class="fc" id="L98">                            &quot;Visitas guardadas en el dispositivo&quot;,</span>
+<span class="fc" id="L99">                            style = MaterialTheme.typography.titleMedium</span>
+                        )
+<span class="fc" id="L101">                        Text(</span>
+<span class="fc" id="L102">                            &quot;Tienes $pendingSync visita(s) guardada(s) en este dispositivo.&quot;</span>
+                        )
+<span class="pc" id="L104">                    }</span>
+<span class="fc" id="L105">                }</span>
+<span class="fc" id="L106">            }</span>
+
+<span class="fc" id="L108">            Button(</span>
+<span class="fc" id="L109">                onClick = onNewVisit,</span>
+<span class="fc" id="L110">                modifier = Modifier.fillMaxWidth()</span>
+<span class="fc" id="L111">            ) {</span>
+<span class="pc bpc" id="L112" title="2 of 6 branches missed.">                Icon(Icons.Default.PostAdd, contentDescription = null)</span>
+<span class="pc bpc" id="L113" title="1 of 2 branches missed.">                Text(&quot;  Registrar nueva visita&quot;)</span>
+<span class="fc" id="L114">            }</span>
+
+<span class="fc" id="L116">            OutlinedButton(</span>
+<span class="fc" id="L117">                onClick = viewModel::refreshRemote,</span>
+<span class="fc bfc" id="L118" title="All 2 branches covered.">                enabled = !remote.busy,</span>
+<span class="fc" id="L119">                modifier = Modifier.fillMaxWidth()</span>
+<span class="fc" id="L120">            ) {</span>
+<span class="pc bpc" id="L121" title="2 of 6 branches missed.">                Icon(Icons.Default.CloudUpload, contentDescription = null)</span>
+<span class="pc bpc" id="L122" title="1 of 4 branches missed.">                Text(if (remote.busy) &quot;Actualizando…&quot; else &quot;  Actualizar desde servidor&quot;)</span>
+<span class="fc" id="L123">            }</span>
+
+<span class="fc bfc" id="L125" title="All 2 branches covered.">            remote.error?.let { Text(it, color = MaterialTheme.colorScheme.error) }</span>
+<span class="fc bfc" id="L126" title="All 2 branches covered.">            remote.message?.let { Text(it) }</span>
+<span class="fc" id="L127">            Text(</span>
+<span class="fc" id="L128">                &quot;Puedes consultar las visitas guardadas sin conexión. Para guardar cambios necesitas conectarte al servidor.&quot;,</span>
+<span class="fc" id="L129">                style = MaterialTheme.typography.bodySmall</span>
+            )
+<span class="fc" id="L131">        }</span>
+<span class="fc" id="L132">    }</span>
+<span class="fc bfc" id="L133" title="All 2 branches covered.">}</span>
+
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

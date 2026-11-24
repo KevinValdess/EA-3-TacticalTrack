@@ -1,0 +1,104 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > AuthApi</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">cl.duoc.tacticaltrack.data.remote</a>
+</div>
+
+<h1>Coverage Summary for Class: AuthApi (cl.duoc.tacticaltrack.data.remote)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+</tr>
+  <tr>
+    <td class="name">AuthApi$Subclass0</td>
+  </tr>
+  <tr>
+    <td class="name">AuthApi$Subclass0$auxiliary$8gQEWjAH</td>
+  </tr>
+  <tr>
+    <td class="name">AuthApi$Subclass0$auxiliary$ELlLzYKa</td>
+  </tr>
+  <tr>
+    <td class="name">AuthApi$Subclass0$auxiliary$FEwoooVa</td>
+  </tr>
+  <tr>
+    <td class="name">AuthApi$Subclass0$auxiliary$ZsDy2WRS</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package cl.duoc.tacticaltrack.data.remote
+&nbsp;
+&nbsp;import cl.duoc.tacticaltrack.model.AuthUser
+&nbsp;import retrofit2.http.Body
+&nbsp;import retrofit2.http.GET
+&nbsp;import retrofit2.http.Header
+&nbsp;import retrofit2.http.POST
+&nbsp;
+&nbsp;data class LoginRequest(val email: String, val password: String)
+&nbsp;data class LoginResponse(
+&nbsp;    val accessToken: String,
+&nbsp;    val tokenType: String,
+&nbsp;    val expiresAt: String,
+&nbsp;    val user: AuthUser
+&nbsp;)
+&nbsp;
+&nbsp;interface AuthApi {
+&nbsp;    @POST(&quot;api/auth/login&quot;) suspend fun login(@Body request: LoginRequest): LoginResponse
+&nbsp;    @GET(&quot;api/auth/me&quot;) suspend fun me(@Header(&quot;Authorization&quot;) authorization: String): AuthUser
+&nbsp;    @POST(&quot;api/auth/logout&quot;) suspend fun logout(@Header(&quot;Authorization&quot;) authorization: String)
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2026-11-24 08:54</div>
+</div>
+</body>
+</html>

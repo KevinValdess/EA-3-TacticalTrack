@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>VisitRepository.kt</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">app</a> &gt; <a href="index.source.html" class="el_package">cl.duoc.tacticaltrack.data.repository</a> &gt; <span class="el_source">VisitRepository.kt</span></div><h1>VisitRepository.kt</h1><pre class="source lang-java linenums">package cl.duoc.tacticaltrack.data.repository
+
+import cl.duoc.tacticaltrack.data.local.VisitDao
+import cl.duoc.tacticaltrack.data.local.VisitEntity
+import cl.duoc.tacticaltrack.data.remote.*
+import cl.duoc.tacticaltrack.domain.VisitRules
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
+
+/** Actualiza el caché local después de cada operación confirmada por la API. */
+<span class="fc" id="L12">class VisitRepository(</span>
+<span class="fc" id="L13">    private val visitDao: VisitDao,</span>
+<span class="fc" id="L14">    private val api: VisitApi,</span>
+<span class="fc" id="L15">    private val evidence: EvidenceStore</span>
+) {
+<span class="fc" id="L17">    private val mutex = Mutex()</span>
+<span class="fc" id="L18">    val visits: Flow&lt;List&lt;VisitEntity&gt;&gt; = visitDao.observeAll()</span>
+<span class="fc" id="L19">    fun observeVisit(id: Long): Flow&lt;VisitEntity?&gt; = visitDao.observeById(id)</span>
+
+<span class="fc" id="L21">    suspend fun fetchVisit(id: Long) = mutex.withLock {</span>
+<span class="fc" id="L22">        val visit=api.get(id)</span>
+<span class="fc" id="L23">        visitDao.insert(visit.toEntity(evidence.persist(id,visit.evidenceBase64)))</span>
+<span class="fc" id="L24">        Unit</span>
+<span class="fc" id="L25">    }</span>
+<span class="fc" id="L26">    suspend fun refresh() = mutex.withLock {</span>
+<span class="fc" id="L27">        val remote = api.all()</span>
+<span class="fc" id="L28">        val snapshot = remote.map { it.toEntity(evidence.persist(it.id, it.evidenceBase64)) }</span>
+<span class="fc" id="L29">        visitDao.replaceSnapshot(snapshot)</span>
+<span class="fc" id="L30">    }</span>
+<span class="fc" id="L31">    suspend fun saveVisit(visit: VisitEntity, requestId: String): Long = mutex.withLock {</span>
+<span class="fc" id="L32">        val dto = VisitDto.fromEntity(visit, evidence.encode(visit.photoUri), requestId)</span>
+<span class="fc" id="L33">        val created = api.create(dto)</span>
+<span class="fc" id="L34">        visitDao.insert(created.toEntity(evidence.persist(created.id, created.evidenceBase64)))</span>
+<span class="fc" id="L35">        created.id</span>
+<span class="fc" id="L36">    }</span>
+<span class="fc" id="L37">    suspend fun editVisit(id: Long, status: String, observations: String) = mutex.withLock {</span>
+<span class="fc bfc" id="L38" title="All 4 branches covered.">        require(VisitRules.editError(status, observations) == null) { &quot;Datos de edición inválidos&quot; }</span>
+<span class="fc" id="L39">        val updated = api.edit(id, EditVisitRequest(status, observations.trim()))</span>
+<span class="fc" id="L40">        visitDao.insert(updated.toEntity(evidence.persist(id, updated.evidenceBase64)))</span>
+<span class="fc" id="L41">        Unit</span>
+<span class="fc" id="L42">    }</span>
+<span class="fc" id="L43">    suspend fun updateSupervisorStatus(id: Long, status: String) = mutex.withLock {</span>
+<span class="fc bfc" id="L44" title="All 2 branches covered.">        require(status in listOf(&quot;Pendiente&quot;, &quot;Aprobada&quot;, &quot;Rechazada&quot;))</span>
+<span class="fc" id="L45">        val updated = api.status(id, SupervisorRequest(status))</span>
+<span class="fc" id="L46">        visitDao.insert(updated.toEntity(evidence.persist(id, updated.evidenceBase64)))</span>
+<span class="fc" id="L47">        Unit</span>
+<span class="fc" id="L48">    }</span>
+<span class="fc" id="L49">    suspend fun deleteVisit(id: Long) = mutex.withLock {</span>
+<span class="fc" id="L50">        api.delete(id)</span>
+<span class="fc" id="L51">        visitDao.delete(id)</span>
+<span class="fc" id="L52">        evidence.remove(id)</span>
+<span class="fc" id="L53">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

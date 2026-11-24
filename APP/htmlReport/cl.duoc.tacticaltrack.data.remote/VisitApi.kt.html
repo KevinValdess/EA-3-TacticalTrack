@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>VisitApi.kt</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">app</a> &gt; <a href="index.source.html" class="el_package">cl.duoc.tacticaltrack.data.remote</a> &gt; <span class="el_source">VisitApi.kt</span></div><h1>VisitApi.kt</h1><pre class="source lang-java linenums">package cl.duoc.tacticaltrack.data.remote
+
+import cl.duoc.tacticaltrack.data.local.VisitEntity
+import retrofit2.http.*
+
+<span class="pc" id="L6">data class VisitDto(</span>
+<span class="pc" id="L7">    val id: Long = 0,</span>
+<span class="pc" id="L8">    val operatorName: String,</span>
+<span class="pc" id="L9">    val operatorRole: String,</span>
+<span class="pc" id="L10">    val pointId: String,</span>
+<span class="pc" id="L11">    val pointName: String,</span>
+<span class="pc" id="L12">    val assetId: String,</span>
+<span class="pc" id="L13">    val assetCode: String,</span>
+<span class="pc" id="L14">    val assetType: String,</span>
+<span class="pc" id="L15">    val visitType: String,</span>
+<span class="pc" id="L16">    val equipmentStatus: String,</span>
+<span class="pc" id="L17">    val observations: String,</span>
+<span class="pc" id="L18">    val latitude: Double,</span>
+<span class="pc" id="L19">    val longitude: Double,</span>
+<span class="pc" id="L20">    val locationAccuracyMeters: Float?,</span>
+<span class="pc" id="L21">    val distanceToPointMeters: Float,</span>
+<span class="pc" id="L22">    val presenceVerified: Boolean,</span>
+<span class="pc" id="L23">    val timestamp: Long,</span>
+<span class="pc" id="L24">    val supervisorStatus: String = &quot;Pendiente&quot;,</span>
+<span class="fc" id="L25">    val evidenceBase64: String,</span>
+<span class="fc" id="L26">    val clientRequestId: String</span>
+<span class="nc" id="L27">) {</span>
+<span class="fc" id="L28">    fun toEntity(photoUri: String) = VisitEntity(</span>
+<span class="fc" id="L29">        id, operatorName, operatorRole, pointId, pointName, assetId, assetCode,</span>
+<span class="fc" id="L30">        assetType, visitType, equipmentStatus, observations, photoUri, latitude,</span>
+<span class="fc" id="L31">        longitude, locationAccuracyMeters, distanceToPointMeters, presenceVerified,</span>
+<span class="fc" id="L32">        timestamp, supervisorStatus, synced = true</span>
+<span class="fc" id="L33">    )</span>
+    companion object {
+<span class="fc" id="L35">        fun fromEntity(v: VisitEntity, evidence: String, requestId: String) = VisitDto(</span>
+<span class="fc" id="L36">            v.id, v.operatorName, v.operatorRole, v.pointId, v.pointName, v.assetId,</span>
+<span class="fc" id="L37">            v.assetCode, v.assetType, v.visitType, v.equipmentStatus, v.observations,</span>
+<span class="fc" id="L38">            v.latitude, v.longitude, v.locationAccuracyMeters, v.distanceToPointMeters,</span>
+<span class="fc" id="L39">            v.presenceVerified, v.timestamp, v.supervisorStatus, evidence, requestId</span>
+<span class="fc" id="L40">        )</span>
+    }
+}
+
+<span class="pc" id="L44">data class EditVisitRequest(val equipmentStatus: String, val observations: String)</span>
+<span class="pc" id="L45">data class SupervisorRequest(val status: String)</span>
+
+interface VisitApi {
+    @GET(&quot;api/visits&quot;) suspend fun all(): List&lt;VisitDto&gt;
+    @GET(&quot;api/visits/{id}&quot;) suspend fun get(@Path(&quot;id&quot;) id: Long): VisitDto
+    @POST(&quot;api/visits&quot;) suspend fun create(@Body visit: VisitDto): VisitDto
+    @PUT(&quot;api/visits/{id}&quot;) suspend fun edit(@Path(&quot;id&quot;) id: Long, @Body edit: EditVisitRequest): VisitDto
+    @PATCH(&quot;api/visits/{id}/status&quot;) suspend fun status(@Path(&quot;id&quot;) id: Long, @Body request: SupervisorRequest): VisitDto
+    @DELETE(&quot;api/visits/{id}&quot;) suspend fun delete(@Path(&quot;id&quot;) id: Long)
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

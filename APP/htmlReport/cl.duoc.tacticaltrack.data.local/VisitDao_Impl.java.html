@@ -1,0 +1,393 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>VisitDao_Impl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">app</a> &gt; <a href="index.source.html" class="el_package">cl.duoc.tacticaltrack.data.local</a> &gt; <span class="el_source">VisitDao_Impl.java</span></div><h1>VisitDao_Impl.java</h1><pre class="source lang-java linenums">package cl.duoc.tacticaltrack.data.local;
+
+import android.database.Cursor;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.room.CoroutinesRoom;
+import androidx.room.EntityInsertionAdapter;
+import androidx.room.RoomDatabase;
+import androidx.room.RoomDatabaseKt;
+import androidx.room.RoomSQLiteQuery;
+import androidx.room.SharedSQLiteStatement;
+import androidx.room.util.CursorUtil;
+import androidx.room.util.DBUtil;
+import androidx.sqlite.db.SupportSQLiteStatement;
+import java.lang.Class;
+import java.lang.Exception;
+import java.lang.Float;
+import java.lang.Long;
+import java.lang.Object;
+import java.lang.Override;
+import java.lang.String;
+import java.lang.SuppressWarnings;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.concurrent.Callable;
+import javax.annotation.processing.Generated;
+import kotlin.Unit;
+import kotlin.coroutines.Continuation;
+import kotlinx.coroutines.flow.Flow;
+
+@Generated(&quot;androidx.room.RoomProcessor&quot;)
+@SuppressWarnings({&quot;unchecked&quot;, &quot;deprecation&quot;})
+public final class VisitDao_Impl implements VisitDao {
+  private final RoomDatabase __db;
+
+  private final EntityInsertionAdapter&lt;VisitEntity&gt; __insertionAdapterOfVisitEntity;
+
+  private final SharedSQLiteStatement __preparedStmtOfClear;
+
+  private final SharedSQLiteStatement __preparedStmtOfDelete;
+
+<span class="fc" id="L43">  public VisitDao_Impl(@NonNull final RoomDatabase __db) {</span>
+<span class="fc" id="L44">    this.__db = __db;</span>
+<span class="fc" id="L45">    this.__insertionAdapterOfVisitEntity = new EntityInsertionAdapter&lt;VisitEntity&gt;(__db) {</span>
+      @Override
+      @NonNull
+      protected String createQuery() {
+<span class="fc" id="L49">        return &quot;INSERT OR REPLACE INTO `visits` (`id`,`operatorName`,`operatorRole`,`pointId`,`pointName`,`assetId`,`assetCode`,`assetType`,`visitType`,`equipmentStatus`,`observations`,`photoUri`,`latitude`,`longitude`,`locationAccuracyMeters`,`distanceToPointMeters`,`presenceVerified`,`timestamp`,`supervisorStatus`,`synced`) VALUES (nullif(?, 0),?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)&quot;;</span>
+      }
+
+      @Override
+      protected void bind(@NonNull final SupportSQLiteStatement statement,
+          @NonNull final VisitEntity entity) {
+<span class="fc" id="L55">        statement.bindLong(1, entity.getId());</span>
+<span class="fc" id="L56">        statement.bindString(2, entity.getOperatorName());</span>
+<span class="fc" id="L57">        statement.bindString(3, entity.getOperatorRole());</span>
+<span class="fc" id="L58">        statement.bindString(4, entity.getPointId());</span>
+<span class="fc" id="L59">        statement.bindString(5, entity.getPointName());</span>
+<span class="fc" id="L60">        statement.bindString(6, entity.getAssetId());</span>
+<span class="fc" id="L61">        statement.bindString(7, entity.getAssetCode());</span>
+<span class="fc" id="L62">        statement.bindString(8, entity.getAssetType());</span>
+<span class="fc" id="L63">        statement.bindString(9, entity.getVisitType());</span>
+<span class="fc" id="L64">        statement.bindString(10, entity.getEquipmentStatus());</span>
+<span class="fc" id="L65">        statement.bindString(11, entity.getObservations());</span>
+<span class="fc" id="L66">        statement.bindString(12, entity.getPhotoUri());</span>
+<span class="fc" id="L67">        statement.bindDouble(13, entity.getLatitude());</span>
+<span class="fc" id="L68">        statement.bindDouble(14, entity.getLongitude());</span>
+<span class="fc bfc" id="L69" title="All 2 branches covered.">        if (entity.getLocationAccuracyMeters() == null) {</span>
+<span class="fc" id="L70">          statement.bindNull(15);</span>
+        } else {
+<span class="fc" id="L72">          statement.bindDouble(15, entity.getLocationAccuracyMeters());</span>
+        }
+<span class="fc" id="L74">        statement.bindDouble(16, entity.getDistanceToPointMeters());</span>
+<span class="pc bpc" id="L75" title="1 of 2 branches missed.">        final int _tmp = entity.getPresenceVerified() ? 1 : 0;</span>
+<span class="fc" id="L76">        statement.bindLong(17, _tmp);</span>
+<span class="fc" id="L77">        statement.bindLong(18, entity.getTimestamp());</span>
+<span class="fc" id="L78">        statement.bindString(19, entity.getSupervisorStatus());</span>
+<span class="fc bfc" id="L79" title="All 2 branches covered.">        final int _tmp_1 = entity.getSynced() ? 1 : 0;</span>
+<span class="fc" id="L80">        statement.bindLong(20, _tmp_1);</span>
+<span class="fc" id="L81">      }</span>
+    };
+<span class="fc" id="L83">    this.__preparedStmtOfClear = new SharedSQLiteStatement(__db) {</span>
+      @Override
+      @NonNull
+      public String createQuery() {
+<span class="fc" id="L87">        final String _query = &quot;DELETE FROM visits&quot;;</span>
+<span class="fc" id="L88">        return _query;</span>
+      }
+    };
+<span class="fc" id="L91">    this.__preparedStmtOfDelete = new SharedSQLiteStatement(__db) {</span>
+      @Override
+      @NonNull
+      public String createQuery() {
+<span class="fc" id="L95">        final String _query = &quot;DELETE FROM visits WHERE id = ?&quot;;</span>
+<span class="fc" id="L96">        return _query;</span>
+      }
+    };
+<span class="fc" id="L99">  }</span>
+
+  @Override
+  public Object insert(final VisitEntity visit, final Continuation&lt;? super Long&gt; $completion) {
+<span class="fc" id="L103">    return CoroutinesRoom.execute(__db, true, new Callable&lt;Long&gt;() {</span>
+      @Override
+      @NonNull
+      public Long call() throws Exception {
+<span class="fc" id="L107">        __db.beginTransaction();</span>
+        try {
+<span class="fc" id="L109">          final Long _result = __insertionAdapterOfVisitEntity.insertAndReturnId(visit);</span>
+<span class="fc" id="L110">          __db.setTransactionSuccessful();</span>
+<span class="fc" id="L111">          return _result;</span>
+        } finally {
+<span class="fc" id="L113">          __db.endTransaction();</span>
+        }
+      }
+    }, $completion);
+  }
+
+  @Override
+  public Object insertAll(final List&lt;VisitEntity&gt; visits,
+      final Continuation&lt;? super Unit&gt; $completion) {
+<span class="fc" id="L122">    return CoroutinesRoom.execute(__db, true, new Callable&lt;Unit&gt;() {</span>
+      @Override
+      @NonNull
+      public Unit call() throws Exception {
+<span class="fc" id="L126">        __db.beginTransaction();</span>
+        try {
+<span class="fc" id="L128">          __insertionAdapterOfVisitEntity.insert(visits);</span>
+<span class="fc" id="L129">          __db.setTransactionSuccessful();</span>
+<span class="fc" id="L130">          return Unit.INSTANCE;</span>
+        } finally {
+<span class="fc" id="L132">          __db.endTransaction();</span>
+        }
+      }
+    }, $completion);
+  }
+
+  @Override
+  public Object replaceSnapshot(final List&lt;VisitEntity&gt; visits,
+      final Continuation&lt;? super Unit&gt; $completion) {
+<span class="fc" id="L141">    return RoomDatabaseKt.withTransaction(__db, (__cont) -&gt; VisitDao.DefaultImpls.replaceSnapshot(VisitDao_Impl.this, visits, __cont), $completion);</span>
+  }
+
+  @Override
+  public Object clear(final Continuation&lt;? super Unit&gt; $completion) {
+<span class="fc" id="L146">    return CoroutinesRoom.execute(__db, true, new Callable&lt;Unit&gt;() {</span>
+      @Override
+      @NonNull
+      public Unit call() throws Exception {
+<span class="fc" id="L150">        final SupportSQLiteStatement _stmt = __preparedStmtOfClear.acquire();</span>
+        try {
+<span class="fc" id="L152">          __db.beginTransaction();</span>
+          try {
+<span class="fc" id="L154">            _stmt.executeUpdateDelete();</span>
+<span class="fc" id="L155">            __db.setTransactionSuccessful();</span>
+<span class="fc" id="L156">            return Unit.INSTANCE;</span>
+          } finally {
+<span class="fc" id="L158">            __db.endTransaction();</span>
+          }
+        } finally {
+<span class="fc" id="L161">          __preparedStmtOfClear.release(_stmt);</span>
+        }
+      }
+    }, $completion);
+  }
+
+  @Override
+  public Object delete(final long id, final Continuation&lt;? super Unit&gt; $completion) {
+<span class="fc" id="L169">    return CoroutinesRoom.execute(__db, true, new Callable&lt;Unit&gt;() {</span>
+      @Override
+      @NonNull
+      public Unit call() throws Exception {
+<span class="fc" id="L173">        final SupportSQLiteStatement _stmt = __preparedStmtOfDelete.acquire();</span>
+<span class="fc" id="L174">        int _argIndex = 1;</span>
+<span class="fc" id="L175">        _stmt.bindLong(_argIndex, id);</span>
+        try {
+<span class="fc" id="L177">          __db.beginTransaction();</span>
+          try {
+<span class="fc" id="L179">            _stmt.executeUpdateDelete();</span>
+<span class="fc" id="L180">            __db.setTransactionSuccessful();</span>
+<span class="fc" id="L181">            return Unit.INSTANCE;</span>
+          } finally {
+<span class="fc" id="L183">            __db.endTransaction();</span>
+          }
+        } finally {
+<span class="fc" id="L186">          __preparedStmtOfDelete.release(_stmt);</span>
+        }
+      }
+    }, $completion);
+  }
+
+  @Override
+  public Flow&lt;List&lt;VisitEntity&gt;&gt; observeAll() {
+<span class="fc" id="L194">    final String _sql = &quot;SELECT * FROM visits ORDER BY timestamp DESC&quot;;</span>
+<span class="fc" id="L195">    final RoomSQLiteQuery _statement = RoomSQLiteQuery.acquire(_sql, 0);</span>
+<span class="fc" id="L196">    return CoroutinesRoom.createFlow(__db, false, new String[] {&quot;visits&quot;}, new Callable&lt;List&lt;VisitEntity&gt;&gt;() {</span>
+      @Override
+      @NonNull
+      public List&lt;VisitEntity&gt; call() throws Exception {
+<span class="fc" id="L200">        final Cursor _cursor = DBUtil.query(__db, _statement, false, null);</span>
+        try {
+<span class="fc" id="L202">          final int _cursorIndexOfId = CursorUtil.getColumnIndexOrThrow(_cursor, &quot;id&quot;);</span>
+<span class="fc" id="L203">          final int _cursorIndexOfOperatorName = CursorUtil.getColumnIndexOrThrow(_cursor, &quot;operatorName&quot;);</span>
+<span class="fc" id="L204">          final int _cursorIndexOfOperatorRole = CursorUtil.getColumnIndexOrThrow(_cursor, &quot;operatorRole&quot;);</span>
+<span class="fc" id="L205">          final int _cursorIndexOfPointId = CursorUtil.getColumnIndexOrThrow(_cursor, &quot;pointId&quot;);</span>
+<span class="fc" id="L206">          final int _cursorIndexOfPointName = CursorUtil.getColumnIndexOrThrow(_cursor, &quot;pointName&quot;);</span>
+<span class="fc" id="L207">          final int _cursorIndexOfAssetId = CursorUtil.getColumnIndexOrThrow(_cursor, &quot;assetId&quot;);</span>
+<span class="fc" id="L208">          final int _cursorIndexOfAssetCode = CursorUtil.getColumnIndexOrThrow(_cursor, &quot;assetCode&quot;);</span>
+<span class="fc" id="L209">          final int _cursorIndexOfAssetType = CursorUtil.getColumnIndexOrThrow(_cursor, &quot;assetType&quot;);</span>
+<span class="fc" id="L210">          final int _cursorIndexOfVisitType = CursorUtil.getColumnIndexOrThrow(_cursor, &quot;visitType&quot;);</span>
+<span class="fc" id="L211">          final int _cursorIndexOfEquipmentStatus = CursorUtil.getColumnIndexOrThrow(_cursor, &quot;equipmentStatus&quot;);</span>
+<span class="fc" id="L212">          final int _cursorIndexOfObservations = CursorUtil.getColumnIndexOrThrow(_cursor, &quot;observations&quot;);</span>
+<span class="fc" id="L213">          final int _cursorIndexOfPhotoUri = CursorUtil.getColumnIndexOrThrow(_cursor, &quot;photoUri&quot;);</span>
+<span class="fc" id="L214">          final int _cursorIndexOfLatitude = CursorUtil.getColumnIndexOrThrow(_cursor, &quot;latitude&quot;);</span>
+<span class="fc" id="L215">          final int _cursorIndexOfLongitude = CursorUtil.getColumnIndexOrThrow(_cursor, &quot;longitude&quot;);</span>
+<span class="fc" id="L216">          final int _cursorIndexOfLocationAccuracyMeters = CursorUtil.getColumnIndexOrThrow(_cursor, &quot;locationAccuracyMeters&quot;);</span>
+<span class="fc" id="L217">          final int _cursorIndexOfDistanceToPointMeters = CursorUtil.getColumnIndexOrThrow(_cursor, &quot;distanceToPointMeters&quot;);</span>
+<span class="fc" id="L218">          final int _cursorIndexOfPresenceVerified = CursorUtil.getColumnIndexOrThrow(_cursor, &quot;presenceVerified&quot;);</span>
+<span class="fc" id="L219">          final int _cursorIndexOfTimestamp = CursorUtil.getColumnIndexOrThrow(_cursor, &quot;timestamp&quot;);</span>
+<span class="fc" id="L220">          final int _cursorIndexOfSupervisorStatus = CursorUtil.getColumnIndexOrThrow(_cursor, &quot;supervisorStatus&quot;);</span>
+<span class="fc" id="L221">          final int _cursorIndexOfSynced = CursorUtil.getColumnIndexOrThrow(_cursor, &quot;synced&quot;);</span>
+<span class="fc" id="L222">          final List&lt;VisitEntity&gt; _result = new ArrayList&lt;VisitEntity&gt;(_cursor.getCount());</span>
+<span class="fc bfc" id="L223" title="All 2 branches covered.">          while (_cursor.moveToNext()) {</span>
+            final VisitEntity _item;
+            final long _tmpId;
+<span class="fc" id="L226">            _tmpId = _cursor.getLong(_cursorIndexOfId);</span>
+            final String _tmpOperatorName;
+<span class="fc" id="L228">            _tmpOperatorName = _cursor.getString(_cursorIndexOfOperatorName);</span>
+            final String _tmpOperatorRole;
+<span class="fc" id="L230">            _tmpOperatorRole = _cursor.getString(_cursorIndexOfOperatorRole);</span>
+            final String _tmpPointId;
+<span class="fc" id="L232">            _tmpPointId = _cursor.getString(_cursorIndexOfPointId);</span>
+            final String _tmpPointName;
+<span class="fc" id="L234">            _tmpPointName = _cursor.getString(_cursorIndexOfPointName);</span>
+            final String _tmpAssetId;
+<span class="fc" id="L236">            _tmpAssetId = _cursor.getString(_cursorIndexOfAssetId);</span>
+            final String _tmpAssetCode;
+<span class="fc" id="L238">            _tmpAssetCode = _cursor.getString(_cursorIndexOfAssetCode);</span>
+            final String _tmpAssetType;
+<span class="fc" id="L240">            _tmpAssetType = _cursor.getString(_cursorIndexOfAssetType);</span>
+            final String _tmpVisitType;
+<span class="fc" id="L242">            _tmpVisitType = _cursor.getString(_cursorIndexOfVisitType);</span>
+            final String _tmpEquipmentStatus;
+<span class="fc" id="L244">            _tmpEquipmentStatus = _cursor.getString(_cursorIndexOfEquipmentStatus);</span>
+            final String _tmpObservations;
+<span class="fc" id="L246">            _tmpObservations = _cursor.getString(_cursorIndexOfObservations);</span>
+            final String _tmpPhotoUri;
+<span class="fc" id="L248">            _tmpPhotoUri = _cursor.getString(_cursorIndexOfPhotoUri);</span>
+            final double _tmpLatitude;
+<span class="fc" id="L250">            _tmpLatitude = _cursor.getDouble(_cursorIndexOfLatitude);</span>
+            final double _tmpLongitude;
+<span class="fc" id="L252">            _tmpLongitude = _cursor.getDouble(_cursorIndexOfLongitude);</span>
+            final Float _tmpLocationAccuracyMeters;
+<span class="fc bfc" id="L254" title="All 2 branches covered.">            if (_cursor.isNull(_cursorIndexOfLocationAccuracyMeters)) {</span>
+<span class="fc" id="L255">              _tmpLocationAccuracyMeters = null;</span>
+            } else {
+<span class="fc" id="L257">              _tmpLocationAccuracyMeters = _cursor.getFloat(_cursorIndexOfLocationAccuracyMeters);</span>
+            }
+            final float _tmpDistanceToPointMeters;
+<span class="fc" id="L260">            _tmpDistanceToPointMeters = _cursor.getFloat(_cursorIndexOfDistanceToPointMeters);</span>
+            final boolean _tmpPresenceVerified;
+            final int _tmp;
+<span class="fc" id="L263">            _tmp = _cursor.getInt(_cursorIndexOfPresenceVerified);</span>
+<span class="pc bpc" id="L264" title="1 of 2 branches missed.">            _tmpPresenceVerified = _tmp != 0;</span>
+            final long _tmpTimestamp;
+<span class="fc" id="L266">            _tmpTimestamp = _cursor.getLong(_cursorIndexOfTimestamp);</span>
+            final String _tmpSupervisorStatus;
+<span class="fc" id="L268">            _tmpSupervisorStatus = _cursor.getString(_cursorIndexOfSupervisorStatus);</span>
+            final boolean _tmpSynced;
+            final int _tmp_1;
+<span class="fc" id="L271">            _tmp_1 = _cursor.getInt(_cursorIndexOfSynced);</span>
+<span class="fc bfc" id="L272" title="All 2 branches covered.">            _tmpSynced = _tmp_1 != 0;</span>
+<span class="fc" id="L273">            _item = new VisitEntity(_tmpId,_tmpOperatorName,_tmpOperatorRole,_tmpPointId,_tmpPointName,_tmpAssetId,_tmpAssetCode,_tmpAssetType,_tmpVisitType,_tmpEquipmentStatus,_tmpObservations,_tmpPhotoUri,_tmpLatitude,_tmpLongitude,_tmpLocationAccuracyMeters,_tmpDistanceToPointMeters,_tmpPresenceVerified,_tmpTimestamp,_tmpSupervisorStatus,_tmpSynced);</span>
+<span class="fc" id="L274">            _result.add(_item);</span>
+<span class="fc" id="L275">          }</span>
+<span class="fc" id="L276">          return _result;</span>
+        } finally {
+<span class="fc" id="L278">          _cursor.close();</span>
+        }
+      }
+
+      @Override
+      protected void finalize() {
+<span class="fc" id="L284">        _statement.release();</span>
+<span class="fc" id="L285">      }</span>
+    });
+  }
+
+  @Override
+  public Flow&lt;VisitEntity&gt; observeById(final long id) {
+<span class="fc" id="L291">    final String _sql = &quot;SELECT * FROM visits WHERE id = ? LIMIT 1&quot;;</span>
+<span class="fc" id="L292">    final RoomSQLiteQuery _statement = RoomSQLiteQuery.acquire(_sql, 1);</span>
+<span class="fc" id="L293">    int _argIndex = 1;</span>
+<span class="fc" id="L294">    _statement.bindLong(_argIndex, id);</span>
+<span class="fc" id="L295">    return CoroutinesRoom.createFlow(__db, false, new String[] {&quot;visits&quot;}, new Callable&lt;VisitEntity&gt;() {</span>
+      @Override
+      @Nullable
+      public VisitEntity call() throws Exception {
+<span class="fc" id="L299">        final Cursor _cursor = DBUtil.query(__db, _statement, false, null);</span>
+        try {
+<span class="fc" id="L301">          final int _cursorIndexOfId = CursorUtil.getColumnIndexOrThrow(_cursor, &quot;id&quot;);</span>
+<span class="fc" id="L302">          final int _cursorIndexOfOperatorName = CursorUtil.getColumnIndexOrThrow(_cursor, &quot;operatorName&quot;);</span>
+<span class="fc" id="L303">          final int _cursorIndexOfOperatorRole = CursorUtil.getColumnIndexOrThrow(_cursor, &quot;operatorRole&quot;);</span>
+<span class="fc" id="L304">          final int _cursorIndexOfPointId = CursorUtil.getColumnIndexOrThrow(_cursor, &quot;pointId&quot;);</span>
+<span class="fc" id="L305">          final int _cursorIndexOfPointName = CursorUtil.getColumnIndexOrThrow(_cursor, &quot;pointName&quot;);</span>
+<span class="fc" id="L306">          final int _cursorIndexOfAssetId = CursorUtil.getColumnIndexOrThrow(_cursor, &quot;assetId&quot;);</span>
+<span class="fc" id="L307">          final int _cursorIndexOfAssetCode = CursorUtil.getColumnIndexOrThrow(_cursor, &quot;assetCode&quot;);</span>
+<span class="fc" id="L308">          final int _cursorIndexOfAssetType = CursorUtil.getColumnIndexOrThrow(_cursor, &quot;assetType&quot;);</span>
+<span class="fc" id="L309">          final int _cursorIndexOfVisitType = CursorUtil.getColumnIndexOrThrow(_cursor, &quot;visitType&quot;);</span>
+<span class="fc" id="L310">          final int _cursorIndexOfEquipmentStatus = CursorUtil.getColumnIndexOrThrow(_cursor, &quot;equipmentStatus&quot;);</span>
+<span class="fc" id="L311">          final int _cursorIndexOfObservations = CursorUtil.getColumnIndexOrThrow(_cursor, &quot;observations&quot;);</span>
+<span class="fc" id="L312">          final int _cursorIndexOfPhotoUri = CursorUtil.getColumnIndexOrThrow(_cursor, &quot;photoUri&quot;);</span>
+<span class="fc" id="L313">          final int _cursorIndexOfLatitude = CursorUtil.getColumnIndexOrThrow(_cursor, &quot;latitude&quot;);</span>
+<span class="fc" id="L314">          final int _cursorIndexOfLongitude = CursorUtil.getColumnIndexOrThrow(_cursor, &quot;longitude&quot;);</span>
+<span class="fc" id="L315">          final int _cursorIndexOfLocationAccuracyMeters = CursorUtil.getColumnIndexOrThrow(_cursor, &quot;locationAccuracyMeters&quot;);</span>
+<span class="fc" id="L316">          final int _cursorIndexOfDistanceToPointMeters = CursorUtil.getColumnIndexOrThrow(_cursor, &quot;distanceToPointMeters&quot;);</span>
+<span class="fc" id="L317">          final int _cursorIndexOfPresenceVerified = CursorUtil.getColumnIndexOrThrow(_cursor, &quot;presenceVerified&quot;);</span>
+<span class="fc" id="L318">          final int _cursorIndexOfTimestamp = CursorUtil.getColumnIndexOrThrow(_cursor, &quot;timestamp&quot;);</span>
+<span class="fc" id="L319">          final int _cursorIndexOfSupervisorStatus = CursorUtil.getColumnIndexOrThrow(_cursor, &quot;supervisorStatus&quot;);</span>
+<span class="fc" id="L320">          final int _cursorIndexOfSynced = CursorUtil.getColumnIndexOrThrow(_cursor, &quot;synced&quot;);</span>
+          final VisitEntity _result;
+<span class="fc bfc" id="L322" title="All 2 branches covered.">          if (_cursor.moveToFirst()) {</span>
+            final long _tmpId;
+<span class="fc" id="L324">            _tmpId = _cursor.getLong(_cursorIndexOfId);</span>
+            final String _tmpOperatorName;
+<span class="fc" id="L326">            _tmpOperatorName = _cursor.getString(_cursorIndexOfOperatorName);</span>
+            final String _tmpOperatorRole;
+<span class="fc" id="L328">            _tmpOperatorRole = _cursor.getString(_cursorIndexOfOperatorRole);</span>
+            final String _tmpPointId;
+<span class="fc" id="L330">            _tmpPointId = _cursor.getString(_cursorIndexOfPointId);</span>
+            final String _tmpPointName;
+<span class="fc" id="L332">            _tmpPointName = _cursor.getString(_cursorIndexOfPointName);</span>
+            final String _tmpAssetId;
+<span class="fc" id="L334">            _tmpAssetId = _cursor.getString(_cursorIndexOfAssetId);</span>
+            final String _tmpAssetCode;
+<span class="fc" id="L336">            _tmpAssetCode = _cursor.getString(_cursorIndexOfAssetCode);</span>
+            final String _tmpAssetType;
+<span class="fc" id="L338">            _tmpAssetType = _cursor.getString(_cursorIndexOfAssetType);</span>
+            final String _tmpVisitType;
+<span class="fc" id="L340">            _tmpVisitType = _cursor.getString(_cursorIndexOfVisitType);</span>
+            final String _tmpEquipmentStatus;
+<span class="fc" id="L342">            _tmpEquipmentStatus = _cursor.getString(_cursorIndexOfEquipmentStatus);</span>
+            final String _tmpObservations;
+<span class="fc" id="L344">            _tmpObservations = _cursor.getString(_cursorIndexOfObservations);</span>
+            final String _tmpPhotoUri;
+<span class="fc" id="L346">            _tmpPhotoUri = _cursor.getString(_cursorIndexOfPhotoUri);</span>
+            final double _tmpLatitude;
+<span class="fc" id="L348">            _tmpLatitude = _cursor.getDouble(_cursorIndexOfLatitude);</span>
+            final double _tmpLongitude;
+<span class="fc" id="L350">            _tmpLongitude = _cursor.getDouble(_cursorIndexOfLongitude);</span>
+            final Float _tmpLocationAccuracyMeters;
+<span class="pc bpc" id="L352" title="1 of 2 branches missed.">            if (_cursor.isNull(_cursorIndexOfLocationAccuracyMeters)) {</span>
+<span class="nc" id="L353">              _tmpLocationAccuracyMeters = null;</span>
+            } else {
+<span class="fc" id="L355">              _tmpLocationAccuracyMeters = _cursor.getFloat(_cursorIndexOfLocationAccuracyMeters);</span>
+            }
+            final float _tmpDistanceToPointMeters;
+<span class="fc" id="L358">            _tmpDistanceToPointMeters = _cursor.getFloat(_cursorIndexOfDistanceToPointMeters);</span>
+            final boolean _tmpPresenceVerified;
+            final int _tmp;
+<span class="fc" id="L361">            _tmp = _cursor.getInt(_cursorIndexOfPresenceVerified);</span>
+<span class="pc bpc" id="L362" title="1 of 2 branches missed.">            _tmpPresenceVerified = _tmp != 0;</span>
+            final long _tmpTimestamp;
+<span class="fc" id="L364">            _tmpTimestamp = _cursor.getLong(_cursorIndexOfTimestamp);</span>
+            final String _tmpSupervisorStatus;
+<span class="fc" id="L366">            _tmpSupervisorStatus = _cursor.getString(_cursorIndexOfSupervisorStatus);</span>
+            final boolean _tmpSynced;
+            final int _tmp_1;
+<span class="fc" id="L369">            _tmp_1 = _cursor.getInt(_cursorIndexOfSynced);</span>
+<span class="fc bfc" id="L370" title="All 2 branches covered.">            _tmpSynced = _tmp_1 != 0;</span>
+<span class="fc" id="L371">            _result = new VisitEntity(_tmpId,_tmpOperatorName,_tmpOperatorRole,_tmpPointId,_tmpPointName,_tmpAssetId,_tmpAssetCode,_tmpAssetType,_tmpVisitType,_tmpEquipmentStatus,_tmpObservations,_tmpPhotoUri,_tmpLatitude,_tmpLongitude,_tmpLocationAccuracyMeters,_tmpDistanceToPointMeters,_tmpPresenceVerified,_tmpTimestamp,_tmpSupervisorStatus,_tmpSynced);</span>
+<span class="fc" id="L372">          } else {</span>
+<span class="fc" id="L373">            _result = null;</span>
+          }
+<span class="fc" id="L375">          return _result;</span>
+        } finally {
+<span class="fc" id="L377">          _cursor.close();</span>
+        }
+      }
+
+      @Override
+      protected void finalize() {
+<span class="fc" id="L383">        _statement.release();</span>
+<span class="fc" id="L384">      }</span>
+    });
+  }
+
+  @NonNull
+  public static List&lt;Class&lt;?&gt;&gt; getRequiredConverters() {
+<span class="fc" id="L390">    return Collections.emptyList();</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

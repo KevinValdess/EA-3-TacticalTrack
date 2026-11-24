@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>SupervisorScreen.kt</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">app</a> &gt; <a href="index.source.html" class="el_package">cl.duoc.tacticaltrack.ui.screens</a> &gt; <span class="el_source">SupervisorScreen.kt</span></div><h1>SupervisorScreen.kt</h1><pre class="source lang-java linenums">package cl.duoc.tacticaltrack.ui.screens
+
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.RowScope
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Button
+import androidx.compose.material3.Card
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import cl.duoc.tacticaltrack.viewmodel.VisitViewModel
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun SupervisorScreen(
+    viewModel: VisitViewModel
+<span class="pc bpc" id="L36" title="3 of 10 branches missed.">) {</span>
+<span class="fc" id="L37">    val remote by viewModel.remote.collectAsStateWithLifecycle()</span>
+<span class="fc" id="L38">    val visits by viewModel.visits.collectAsStateWithLifecycle()</span>
+
+<span class="pc bpc" id="L40" title="1 of 2 branches missed.">    Scaffold(</span>
+<span class="fc" id="L41">        topBar = {</span>
+<span class="pc bpc" id="L42" title="10 of 16 branches missed.">            TopAppBar(title = { Text(&quot;Validación de supervisor&quot;) }, actions = {</span>
+<span class="pc bpc" id="L43" title="11 of 18 branches missed.">                androidx.compose.material3.TextButton(onClick = viewModel::refreshRemote, enabled = !remote.busy) { Text(&quot;Actualizar&quot;) }</span>
+<span class="pc" id="L44">            })</span>
+<span class="fc" id="L45">        }</span>
+<span class="fc" id="L46">    ) { innerPadding -&gt;</span>
+<span class="pc bpc" id="L47" title="2 of 8 branches missed.">        if (remote.error != null) {</span>
+<span class="pc bpc" id="L48" title="1 of 2 branches missed.">            Text(remote.error.orEmpty(), Modifier.padding(innerPadding).padding(16.dp), color = MaterialTheme.colorScheme.error)</span>
+<span class="fc bfc" id="L49" title="All 2 branches covered.">        } else if (visits.isEmpty()) {</span>
+<span class="fc" id="L50">            Text(</span>
+<span class="fc" id="L51">                &quot;No existen registros para revisar.&quot;,</span>
+<span class="fc" id="L52">                modifier = Modifier</span>
+<span class="fc" id="L53">                    .fillMaxSize()</span>
+<span class="fc" id="L54">                    .padding(innerPadding)</span>
+<span class="fc" id="L55">                    .padding(24.dp)</span>
+            )
+<span class="pc bpc" id="L57" title="1 of 2 branches missed.">        } else {</span>
+<span class="fc" id="L58">            LazyColumn(</span>
+<span class="fc" id="L59">                modifier = Modifier</span>
+<span class="fc" id="L60">                    .fillMaxSize()</span>
+<span class="fc" id="L61">                    .padding(innerPadding)</span>
+<span class="fc" id="L62">                    .padding(horizontal = 12.dp),</span>
+<span class="fc" id="L63">                verticalArrangement = Arrangement.spacedBy(10.dp)</span>
+<span class="fc" id="L64">            ) {</span>
+<span class="fc" id="L65">                items(visits, key = { it.id }) { visit -&gt;</span>
+                    Card(Modifier.fillMaxWidth()) {
+<span class="pc bpc" id="L67" title="4 of 6 branches missed.">                        Column(</span>
+<span class="fc" id="L68">                            Modifier.padding(16.dp),</span>
+<span class="fc" id="L69">                            verticalArrangement = Arrangement.spacedBy(8.dp)</span>
+                        ) {
+<span class="fc" id="L71">                            Text(</span>
+<span class="fc" id="L72">                                &quot;${visit.assetCode} · ${visit.pointName}&quot;,</span>
+<span class="fc" id="L73">                                style = MaterialTheme.typography.titleMedium</span>
+                            )
+<span class="fc" id="L75">                            Text(&quot;Operario: ${visit.operatorName}&quot;)</span>
+<span class="fc" id="L76">                            Text(</span>
+<span class="fc bfc" id="L77" title="All 2 branches covered.">                                if (visit.presenceVerified) {</span>
+<span class="fc" id="L78">                                    &quot;Ubicación dentro del radio de 150 m&quot;</span>
+                                } else {
+<span class="fc" id="L80">                                    &quot;Ubicación fuera del radio de 150 m&quot;</span>
+                                }
+                            )
+<span class="fc" id="L83">                            Text(&quot;Estado: ${visit.supervisorStatus}&quot;)</span>
+
+<span class="fc" id="L85">                            Row(</span>
+<span class="fc" id="L86">                                modifier = Modifier.fillMaxWidth(),</span>
+<span class="fc" id="L87">                                horizontalArrangement = Arrangement.spacedBy(8.dp)</span>
+                            ) {
+<span class="fc" id="L89">                                Button(</span>
+<span class="fc" id="L90">                                    onClick = { viewModel.approveVisit(visit.id) },</span>
+<span class="pc bpc" id="L91" title="1 of 2 branches missed.">                                    enabled = !remote.busy,</span>
+<span class="fc" id="L92">                                    modifier = Modifier.weight(1f)</span>
+<span class="fc" id="L93">                                ) {</span>
+<span class="pc bpc" id="L94" title="2 of 6 branches missed.">                                    Icon(Icons.Default.Check, contentDescription = null)</span>
+<span class="pc bpc" id="L95" title="1 of 2 branches missed.">                                    Text(&quot; Aprobar&quot;)</span>
+<span class="fc" id="L96">                                }</span>
+<span class="fc" id="L97">                                OutlinedButton(</span>
+<span class="fc" id="L98">                                    onClick = { viewModel.rejectVisit(visit.id) },</span>
+<span class="pc bpc" id="L99" title="1 of 2 branches missed.">                                    enabled = !remote.busy,</span>
+<span class="fc" id="L100">                                    modifier = Modifier.weight(1f)</span>
+<span class="fc" id="L101">                                ) {</span>
+<span class="pc bpc" id="L102" title="2 of 6 branches missed.">                                    Icon(Icons.Default.Close, contentDescription = null)</span>
+<span class="pc bpc" id="L103" title="1 of 2 branches missed.">                                    Text(&quot; Rechazar&quot;)</span>
+<span class="fc" id="L104">                                }</span>
+<span class="fc" id="L105">                            }</span>
+<span class="pc" id="L106">                        }</span>
+<span class="fc" id="L107">                    }</span>
+                }
+<span class="fc" id="L109">            }</span>
+<span class="fc" id="L110">        }</span>
+<span class="fc" id="L111">    }</span>
+<span class="pc bpc" id="L112" title="1 of 2 branches missed.">}</span>
+
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

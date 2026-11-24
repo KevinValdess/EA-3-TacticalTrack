@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>EvidenceStore.kt</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">app</a> &gt; <a href="index.source.html" class="el_package">cl.duoc.tacticaltrack.data.remote</a> &gt; <span class="el_source">EvidenceStore.kt</span></div><h1>EvidenceStore.kt</h1><pre class="source lang-java linenums">package cl.duoc.tacticaltrack.data.remote
+
+import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.net.Uri
+import android.util.Base64
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import java.io.ByteArrayOutputStream
+import java.io.File
+
+interface EvidenceStore {
+    suspend fun encode(uri: String): String
+    suspend fun persist(id: Long, base64: String): String
+    suspend fun remove(id: Long)
+}
+
+/** Comprime las fotos para enviarlas a la API y guarda la evidencia recibida. */
+<span class="fc" id="L20">class AndroidEvidenceStore(private val context: Context) : EvidenceStore {</span>
+<span class="pc bpc" id="L21" title="1 of 2 branches missed.">    override suspend fun encode(uri: String): String = withContext(Dispatchers.IO) {</span>
+<span class="fc" id="L22">        val parsed = Uri.parse(uri)</span>
+<span class="fc" id="L23">        val bounds = BitmapFactory.Options().apply { inJustDecodeBounds = true }</span>
+<span class="pc" id="L24">        context.contentResolver.openInputStream(parsed).use { BitmapFactory.decodeStream(it, null, bounds) }</span>
+<span class="pc bpc" id="L25" title="1 of 6 branches missed.">        require(bounds.outWidth &gt; 0 &amp;&amp; bounds.outHeight &gt; 0) { &quot;Fotografía inválida&quot; }</span>
+<span class="fc" id="L26">        var sample = 1</span>
+<span class="fc bfc" id="L27" title="All 2 branches covered.">        while (maxOf(bounds.outWidth, bounds.outHeight) / sample &gt; 1280) sample *= 2</span>
+<span class="fc" id="L28">        val options = BitmapFactory.Options().apply { inSampleSize = sample }</span>
+<span class="pc" id="L29">        val bitmap = context.contentResolver.openInputStream(parsed).use {</span>
+<span class="pc bpc" id="L30" title="1 of 2 branches missed.">            requireNotNull(BitmapFactory.decodeStream(it, null, options)) { &quot;No se pudo abrir la fotografía&quot; }</span>
+        }
+<span class="fc" id="L32">        try {</span>
+<span class="fc" id="L33">            val output = ByteArrayOutputStream()</span>
+<span class="pc bpc" id="L34" title="1 of 2 branches missed.">            check(bitmap.compress(Bitmap.CompressFormat.JPEG, 75, output))</span>
+<span class="fc" id="L35">            val encoded = Base64.encodeToString(output.toByteArray(), Base64.NO_WRAP)</span>
+<span class="pc bpc" id="L36" title="2 of 4 branches missed.">            require(encoded.length &lt;= 3_000_000) { &quot;La evidencia es demasiado grande&quot; }</span>
+<span class="fc" id="L37">            encoded</span>
+<span class="fc" id="L38">        } finally { bitmap.recycle() }</span>
+<span class="fc" id="L39">    }</span>
+<span class="pc bpc" id="L40" title="1 of 2 branches missed.">    override suspend fun persist(id: Long, base64: String): String = withContext(Dispatchers.IO) {</span>
+<span class="fc" id="L41">        val file = File(context.filesDir, &quot;remote_evidence_$id.jpg&quot;)</span>
+<span class="fc" id="L42">        file.writeBytes(Base64.decode(base64, Base64.DEFAULT))</span>
+<span class="fc" id="L43">        Uri.fromFile(file).toString()</span>
+<span class="fc" id="L44">    }</span>
+<span class="pc bpc" id="L45" title="1 of 2 branches missed.">    override suspend fun remove(id: Long) { withContext(Dispatchers.IO) { File(context.filesDir, &quot;remote_evidence_$id.jpg&quot;).delete() } }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>AuthApi.kt</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">app</a> &gt; <a href="index.source.html" class="el_package">cl.duoc.tacticaltrack.data.remote</a> &gt; <span class="el_source">AuthApi.kt</span></div><h1>AuthApi.kt</h1><pre class="source lang-java linenums">package cl.duoc.tacticaltrack.data.remote
+
+import cl.duoc.tacticaltrack.model.AuthUser
+import retrofit2.http.Body
+import retrofit2.http.GET
+import retrofit2.http.Header
+import retrofit2.http.POST
+
+<span class="pc" id="L9">data class LoginRequest(val email: String, val password: String)</span>
+<span class="fc" id="L10">data class LoginResponse(</span>
+<span class="fc" id="L11">    val accessToken: String,</span>
+<span class="fc" id="L12">    val tokenType: String,</span>
+<span class="fc" id="L13">    val expiresAt: String,</span>
+<span class="fc" id="L14">    val user: AuthUser</span>
+)
+
+interface AuthApi {
+    @POST(&quot;api/auth/login&quot;) suspend fun login(@Body request: LoginRequest): LoginResponse
+    @GET(&quot;api/auth/me&quot;) suspend fun me(@Header(&quot;Authorization&quot;) authorization: String): AuthUser
+    @POST(&quot;api/auth/logout&quot;) suspend fun logout(@Header(&quot;Authorization&quot;) authorization: String)
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

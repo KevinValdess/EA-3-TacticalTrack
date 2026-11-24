@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PushRegistration.kt</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">app</a> &gt; <a href="index.source.html" class="el_package">cl.duoc.tacticaltrack.push</a> &gt; <span class="el_source">PushRegistration.kt</span></div><h1>PushRegistration.kt</h1><pre class="source lang-java linenums">package cl.duoc.tacticaltrack.push
+
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.content.Context
+import androidx.work.*
+import com.google.firebase.FirebaseApp
+import com.google.firebase.messaging.FirebaseMessaging
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import java.util.UUID
+import java.util.concurrent.TimeUnit
+
+object PushRegistration {
+ const val CHANNEL=&quot;visits_supervisor&quot;
+<span class="fc" id="L16"> private val _session=MutableStateFlow(false)</span>
+<span class="fc" id="L17"> val supervisorSession=_session.asStateFlow()</span>
+<span class="fc" id="L18"> fun preferences(context:Context)=context.getSharedPreferences(&quot;push_registration&quot;,Context.MODE_PRIVATE)</span>
+<span class="pc bpc" id="L19" title="1 of 2 branches missed."> fun configured(context:Context)=FirebaseApp.getApps(context).isNotEmpty()</span>
+ fun initialize(context:Context){
+<span class="fc" id="L21">  val channel=NotificationChannel(CHANNEL,&quot;Visitas para revisar&quot;,NotificationManager.IMPORTANCE_DEFAULT)</span>
+<span class="fc" id="L22">  context.getSystemService(NotificationManager::class.java).createNotificationChannel(channel)</span>
+<span class="fc" id="L23">  val prefs=preferences(context)</span>
+<span class="fc bfc" id="L24" title="All 2 branches covered.">  if(!prefs.contains(&quot;installationId&quot;))prefs.edit().putString(&quot;installationId&quot;,UUID.randomUUID().toString()).apply()</span>
+<span class="pc bpc" id="L25" title="5 of 6 branches missed.">  if(prefs.getBoolean(&quot;enabled&quot;,false)&amp;&amp;prefs.getBoolean(&quot;supervisor&quot;,false)&amp;&amp;configured(context)) refreshToken(context)</span>
+<span class="fc" id="L26"> }</span>
+<span class="fc" id="L27"> fun setRole(context:Context,role:String,supervisorId:String?=null){</span>
+<span class="pc bpc" id="L28" title="3 of 8 branches missed.">  val supervisor=role==&quot;Supervisor&quot;&amp;&amp;!supervisorId.isNullOrBlank()</span>
+<span class="fc" id="L29">  _session.value=supervisor</span>
+<span class="fc" id="L30">  val prefs=preferences(context)</span>
+<span class="fc" id="L31">  val previousSupervisor=prefs.getString(&quot;supervisorId&quot;,null)</span>
+<span class="fc bfc" id="L32" title="All 2 branches covered.">  prefs.edit().putBoolean(&quot;supervisor&quot;,supervisor).putString(&quot;supervisorId&quot;,if(supervisor)supervisorId else previousSupervisor).apply()</span>
+<span class="pc bpc" id="L33" title="1 of 4 branches missed.">  if(supervisor&amp;&amp;prefs.getBoolean(&quot;enabled&quot;,false))refreshToken(context)</span>
+  else {
+<span class="fc" id="L35">   enqueue(context)</span>
+<span class="fc bfc" id="L36" title="All 2 branches covered.">   if(!supervisor){</span>
+<span class="fc" id="L37">    context.getSystemService(NotificationManager::class.java).cancelAll()</span>
+<span class="pc bpc" id="L38" title="1 of 2 branches missed.">    if(configured(context))FirebaseMessaging.getInstance().deleteToken()</span>
+   }
+  }
+<span class="fc" id="L41"> }</span>
+ suspend fun endSession(context:Context){
+<span class="fc" id="L43">  val prefs=preferences(context)</span>
+<span class="fc" id="L44">  val id=prefs.getString(&quot;installationId&quot;,null)</span>
+<span class="fc" id="L45">  prefs.edit().putBoolean(&quot;supervisor&quot;,false).apply()</span>
+<span class="fc" id="L46">  _session.value=false</span>
+<span class="fc" id="L47">  WorkManager.getInstance(context).cancelUniqueWork(&quot;register-push-device&quot;)</span>
+<span class="fc" id="L48">  try {</span>
+<span class="pc bpc" id="L49" title="1 of 2 branches missed.">   if(id!=null) kotlinx.coroutines.withTimeoutOrNull(5000) {</span>
+<span class="fc" id="L50">    cl.duoc.tacticaltrack.data.remote.ApiFactory.devices.unregister(id)</span>
+<span class="fc" id="L51">   }</span>
+<span class="nc" id="L52">  }catch(error:kotlinx.coroutines.CancellationException){throw error}</span>
+<span class="nc" id="L53">   catch(_:Exception){ /* Al volver a entrar se actualizará el registro del dispositivo. */ }</span>
+  finally {
+<span class="fc" id="L55">   context.getSystemService(NotificationManager::class.java).cancelAll()</span>
+<span class="pc bpc" id="L56" title="1 of 2 branches missed.">   if(configured(context))FirebaseMessaging.getInstance().deleteToken()</span>
+  }
+<span class="fc" id="L58"> }</span>
+ fun setEnabled(context:Context,enabled:Boolean){
+<span class="fc" id="L60">  preferences(context).edit().putBoolean(&quot;enabled&quot;,enabled).apply()</span>
+<span class="pc bpc" id="L61" title="1 of 2 branches missed.">  if(enabled)refreshToken(context)</span>
+  else {
+<span class="fc" id="L63">   enqueue(context)</span>
+<span class="fc" id="L64">   context.getSystemService(NotificationManager::class.java).cancelAll()</span>
+<span class="pc bpc" id="L65" title="1 of 2 branches missed.">   if(configured(context))FirebaseMessaging.getInstance().deleteToken()</span>
+  }
+<span class="fc" id="L67"> }</span>
+ fun refreshToken(context:Context){
+<span class="pc bpc" id="L69" title="1 of 2 branches missed.">  if(!configured(context))return</span>
+<span class="nc" id="L70">  FirebaseMessaging.getInstance().token.addOnSuccessListener { token-&gt;tokenChanged(context,token) }</span>
+<span class="nc" id="L71">   .addOnFailureListener { preferences(context).edit().putString(&quot;status&quot;,&quot;No se pudo obtener el token. Reintenta con conexión.&quot;).apply() }</span>
+<span class="nc" id="L72"> }</span>
+ fun tokenChanged(context:Context,token:String){
+<span class="fc" id="L74">  val prefs=preferences(context)</span>
+<span class="fc" id="L75">  prefs.edit().putString(&quot;token&quot;,token).apply()</span>
+<span class="pc bpc" id="L76" title="3 of 4 branches missed.">  if(prefs.getBoolean(&quot;enabled&quot;,false)&amp;&amp;prefs.getBoolean(&quot;supervisor&quot;,false))enqueue(context)</span>
+<span class="fc" id="L77"> }</span>
+ private fun enqueue(context:Context){
+<span class="fc" id="L79">  val request=OneTimeWorkRequestBuilder&lt;DeviceRegistrationWorker&gt;()</span>
+<span class="fc" id="L80">   .setConstraints(Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).build())</span>
+<span class="fc" id="L81">   .setBackoffCriteria(BackoffPolicy.EXPONENTIAL,30,TimeUnit.SECONDS).build()</span>
+<span class="fc" id="L82">  WorkManager.getInstance(context).enqueueUniqueWork(&quot;register-push-device&quot;,ExistingWorkPolicy.REPLACE,request)</span>
+<span class="fc" id="L83"> }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>
