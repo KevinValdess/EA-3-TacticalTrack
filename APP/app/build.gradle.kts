@@ -1,6 +1,7 @@
 import org.gradle.testing.jacoco.tasks.JacocoReport
 import org.gradle.testing.jacoco.tasks.JacocoCoverageVerification
 import java.util.Properties
+import java.util.Locale
 
 plugins {
     id("com.android.application")
@@ -244,7 +245,7 @@ tasks.register("prepararCoberturaIDE") {
         val destination = rootProject.file("cobertura-ide").apply { mkdirs() }
         data.copyTo(destination.resolve("TacticalTrack.exec"), overwrite = true)
         xml.copyTo(destination.resolve("TacticalTrack.xml"), overwrite = true)
-        val percent = "%.2f".format(java.util.Locale.ROOT, covered * 100.0 / total)
+        val percent = "%.2f".format(Locale.ROOT, covered * 100.0 / total)
         val summary = "Pruebas: $tests\nFallos: $failures\nErrores: $errors\nOmitidas: $skipped\n" +
             "Cobertura general LINE: $percent% ($covered/$total)\n" +
             "Datos para importar en Android Studio: ${destination.resolve("TacticalTrack.exec")}\n" +
