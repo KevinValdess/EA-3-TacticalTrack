@@ -1,5 +1,6 @@
 package cl.duoc.tacticaltrack
 import androidx.compose.ui.test.*
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.test.core.app.ApplicationProvider
 import cl.duoc.tacticaltrack.data.repository.*
@@ -27,6 +28,8 @@ class NavigationAndroidTest {
   val preferences=mockk<UserPreferencesRepository>(relaxed=true);every{preferences.lastUsername}returns flowOf("")
   val repo=mockk<VisitRepository>(relaxed=true);every{repo.visits}returns flowOf(listOf(sampleVisit()))
   every{repo.observeVisit(any())}returns flowOf(sampleVisit())
+  coEvery{repo.fetchVisit(any())}just Runs
+  coEvery{repo.refresh()}just Runs
   val catalog=mockk<CatalogRepository>();coEvery{catalog.load()}returns CatalogSnapshot(TestCatalog.points,TestCatalog.assets)
   every{app.authRepository}returns auth;every{app.preferencesRepository}returns preferences
   every{app.visitRepository}returns repo;every{app.catalogRepository}returns catalog
@@ -55,14 +58,17 @@ class NavigationAndroidTest {
   compose.onNodeWithText("Hola, Victor · Operario").assertExists()
   compose.onNodeWithText("Supervisor",substring=false).assertDoesNotExist()
  }
- @Test fun pendingPushIsConsumedAndRoutesToDetail(){
+ @Test fun foregroundPushIsConsumedAndRoutesToDetail(){
   // Evita llamadas a terceros mientras se comprueba la navegación de un aviso.
   val api=mockk<cl.duoc.tacticaltrack.data.remote.WeatherApi>()
   mockkObject(cl.duoc.tacticaltrack.data.remote.ApiFactory)
   every{cl.duoc.tacticaltrack.data.remote.ApiFactory.weather}returns api
   coEvery{api.current(any(),any(),any(),any())}throws java.io.IOException()
   var consumed=false
-  compose.setContent{TacticalTrackTheme{TacticalTrackApp(false,1){consumed=true}}}
+  val pending = mutableStateOf<Long?>(null)
+  compose.setContent{TacticalTrackTheme{TacticalTrackApp(false,pending.value){consumed=true;pending.value=null}}}
+  compose.onNodeWithText("Hola, Kevin · Supervisor").assertExists()
+  compose.runOnIdle{pending.value=1L}
   compose.waitUntil(5000){consumed}
   compose.waitUntil(5000){compose.onAllNodesWithText("Detalle de visita").fetchSemanticsNodes().isNotEmpty()}
   compose.mainClock.advanceTimeBy(1000);compose.waitForIdle()
