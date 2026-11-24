@@ -1,0 +1,34 @@
+name: Cobertura general Android
+on:
+  push:
+    branches: [fix/cobertura-general]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  cobertura:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: android-actions/setup-android@v3
+        with:
+          packages: 'platform-tools platforms;android-35 build-tools;35.0.0'
+          log-accepted-android-sdk-licenses: false
+      - uses: gradle/actions/setup-gradle@v4
+      - run: chmod +x APP/gradlew
+      - run: ./APP/gradlew -p APP testDebugUnitTest --continue --no-daemon --stacktrace
+      - if: always()
+        run: ./APP/gradlew -p APP fullCoverageReport verifyFullCoverage -x testDebugUnitTest --no-daemon
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: cobertura-general-android
+          path: |
+            APP/app/build/reports/
+            APP/app/build/test-results/testDebugUnitTest/

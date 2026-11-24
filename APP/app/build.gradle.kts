@@ -52,7 +52,7 @@ android {
         }
     }
     buildTypes {
-        debug { enableUnitTestCoverage = true }
+        debug { enableUnitTestCoverage = false }
         release {
             if (releaseKeys.isNotEmpty()) signingConfig = signingConfigs.getByName("evaluation")
             isMinifyEnabled = false
@@ -71,6 +71,8 @@ android {
     kotlinOptions {
         jvmTarget = "17"
     }
+
+    testOptions { unitTests.isIncludeAndroidResources = true }
 
     buildFeatures {
         compose = true
@@ -116,6 +118,10 @@ dependencies {
 
     implementation("com.squareup.retrofit2:retrofit:2.11.0")
     implementation("com.squareup.retrofit2:converter-gson:2.11.0")
+    testImplementation("org.robolectric:robolectric:4.14.1")
+    testImplementation("androidx.test:core:1.6.1")
+    testImplementation("androidx.compose.ui:ui-test-junit4")
+    testImplementation("androidx.work:work-testing:2.10.0")
     testImplementation("junit:junit:4.13.2")
     testImplementation("com.squareup.okhttp3:mockwebserver:4.12.0")
     testImplementation("io.mockk:mockk:1.13.13")
@@ -141,7 +147,7 @@ val logicSources = files("src/main/java")
 val coverageData = files(
     layout.buildDirectory.file("outputs/unit_test_code_coverage/debugUnitTest/testDebugUnitTest.exec"),
     layout.buildDirectory.file("jacoco/testDebugUnitTest.exec")
-).filter { it.exists() }
+)
 tasks.register<JacocoReport>("logicCoverageReport") {
     dependsOn("testDebugUnitTest")
     classDirectories.setFrom(logicClasses)
@@ -164,4 +170,33 @@ tasks.matching { it.name == "validateSigningRelease" }.configureEach {
 // Cargar instrumentación al iniciar la JVM evita depender de auto-attach del sistema.
 tasks.withType<Test>().configureEach {
     jvmArgs("-javaagent:${mockkInstrumentationAgent.singleFile}")
+}
+
+// Se incluyen todas las clases propias y las implementaciones generadas de Room.
+// No se excluyen pantallas, navegación, servicios ni adaptadores Android.
+val fullClasses = files(
+    fileTree(layout.buildDirectory.dir("tmp/kotlin-classes/debug")) { include("cl/duoc/tacticaltrack/**/*.class") },
+    fileTree(layout.buildDirectory.dir("intermediates/javac/debug/compileDebugJavaWithJavac/classes")) { include("cl/duoc/tacticaltrack/**/*.class") }
+)
+tasks.register<JacocoReport>("fullCoverageReport") {
+    dependsOn("testDebugUnitTest")
+    classDirectories.setFrom(fullClasses)
+    sourceDirectories.setFrom(files("src/main/java", "build/generated/ksp/debug/java", "build/generated/ksp/debug/kotlin"))
+    executionData.setFrom(coverageData)
+    reports { xml.required.set(true); html.required.set(true) }
+}
+tasks.register<JacocoCoverageVerification>("verifyFullCoverage") {
+    dependsOn("fullCoverageReport")
+    classDirectories.setFrom(fullClasses)
+    executionData.setFrom(coverageData)
+    violationRules { rule { limit { counter = "LINE"; minimum = "0.80".toBigDecimal() } } }
+    doFirst { check(coverageData.files.any { it.exists() && it.length() > 0 }) { "No se generaron datos de cobertura" } }
+}
+tasks.withType<Test>().configureEach {
+    maxHeapSize = "2048m"
+    extensions.configure<org.gradle.testing.jacoco.plugins.JacocoTaskExtension> {
+        isIncludeNoLocationClasses = true
+        excludes = listOf("jdk.internal.*")
+    }
+    systemProperty("robolectric.dependency.repo.url", "https://repo.maven.apache.org/maven2")
 }
