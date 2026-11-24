@@ -1,7 +1,7 @@
 name: Cobertura general Android
 on:
   push:
-    branches: [fix/cobertura-general]
+    branches: [main, fix/cobertura-general]
   pull_request:
     branches: [main]
   workflow_dispatch:
