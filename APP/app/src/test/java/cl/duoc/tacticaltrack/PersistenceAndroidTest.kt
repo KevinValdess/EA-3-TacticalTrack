@@ -19,6 +19,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
+import org.robolectric.annotation.GraphicsMode
 import org.robolectric.Shadows.shadowOf
 import java.io.File
 @RunWith(RobolectricTestRunner::class)
@@ -50,7 +51,8 @@ class PersistenceAndroidTest {
   val file=File(Uri.parse(store.persist(42,Base64.encodeToString(bytes,Base64.NO_WRAP))).path!!)
   assertArrayEquals(bytes,file.readBytes());store.remove(42);assertFalse(file.exists());store.remove(42)
  }
- @Test fun photoEncodingRejectsInvalidContentAndCompressesLargeImage()=runBlocking {
+ @Test @GraphicsMode(GraphicsMode.Mode.NATIVE)
+ fun photoEncodingRejectsInvalidContentAndCompressesLargeImage()=runBlocking {
   val store=AndroidEvidenceStore(context)
   val invalid=File(context.cacheDir,"invalid.txt").apply{writeText("not an image")}
   try{store.encode(Uri.fromFile(invalid).toString());fail("Debe rechazar datos no fotográficos")}catch(_:IllegalArgumentException){}

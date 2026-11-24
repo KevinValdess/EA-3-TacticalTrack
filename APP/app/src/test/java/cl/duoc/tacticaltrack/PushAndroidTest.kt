@@ -34,19 +34,19 @@ class PushAndroidTest {
  private fun worker()=TestListenableWorkerBuilder<DeviceRegistrationWorker>(context).build()
  @Test fun workerRequiresIdTokenAndSupervisor()=runBlocking {
   val prefs=PushRegistration.preferences(context);assertEquals(ListenableWorker.Result.failure(),worker().doWork())
-  prefs.edit().putString("installationId","install").putBoolean("enabled",true).putBoolean("supervisor",true).commit()
+  prefs.edit().putString("installationId","installation-123").putBoolean("enabled",true).putBoolean("supervisor",true).commit()
   assertEquals(ListenableWorker.Result.retry(),worker().doWork());prefs.edit().putString("token","token").commit()
   assertEquals(ListenableWorker.Result.failure(),worker().doWork());coVerify(exactly=0){api.register(any(),any())}
  }
  @Test fun workerRegistersOrUnregistersAccordingToPreference()=runBlocking {
   val p=PushRegistration.preferences(context)
-  p.edit().putString("installationId","install").putString("supervisorId","SUP-001").putString("token","token").putBoolean("enabled",true).putBoolean("supervisor",true).commit()
-  assertEquals(ListenableWorker.Result.success(),worker().doWork());coVerify{api.register("install",any())}
+  p.edit().putString("installationId","installation-123").putString("supervisorId","SUP-001").putString("token","token").putBoolean("enabled",true).putBoolean("supervisor",true).commit()
+  assertEquals(ListenableWorker.Result.success(),worker().doWork());coVerify{api.register("installation-123",any())}
   assertTrue(p.getString("status","")!!.contains("registrado"));p.edit().putBoolean("enabled",false).commit()
-  assertEquals(ListenableWorker.Result.success(),worker().doWork());coVerify{api.unregister("install")}
+  assertEquals(ListenableWorker.Result.success(),worker().doWork());coVerify{api.unregister("installation-123")}
  }
  @Test fun workerRetriesOnlyTransientFailures()=runBlocking {
-  PushRegistration.preferences(context).edit().putString("installationId","install").commit()
+  PushRegistration.preferences(context).edit().putString("installationId","installation-123").commit()
   coEvery{api.unregister(any())}throws IOException("sin red");assertEquals(ListenableWorker.Result.retry(),worker().doWork())
   for(code in listOf(400,401,403,404,408,429,500)){
    coEvery{api.unregister(any())}throws httpError(code)

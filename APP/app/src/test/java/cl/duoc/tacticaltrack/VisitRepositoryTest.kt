@@ -28,6 +28,17 @@ class VisitRepositoryTest {
         coEvery { evidence.remove(any()) } just Runs
         repository = VisitRepository(dao, api, evidence)
     }
+    @Test fun fetchingNotificationVisitCachesRemoteEvidence() = runBlocking {
+        coEvery { api.get(1) } returns sampleDto()
+        repository.fetchVisit(1)
+        coVerify { evidence.persist(1, "aW1hZ2Vu") }
+        coVerify { dao.insert(match { it.id == 1L && it.synced }) }
+    }
+    @Test fun failedNotificationLookupDoesNotInsertCache() = runBlocking {
+        coEvery { api.get(1) } throws IOException()
+        try { repository.fetchVisit(1); fail() } catch (_: IOException) { }
+        coVerify(exactly = 0) { dao.insert(any()) }
+    }
     @Test fun refreshReplacesCacheAfterSuccess() = runBlocking {
         coEvery { api.all() } returns listOf(sampleDto())
         repository.refresh()

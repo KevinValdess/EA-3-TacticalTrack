@@ -3,6 +3,7 @@ import android.app.Application
 import androidx.compose.foundation.layout.Column
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.test.*
+import androidx.compose.ui.semantics.SemanticsActions
 import androidx.compose.ui.test.junit4.createComposeRule
 import cl.duoc.tacticaltrack.data.local.VisitEntity
 import cl.duoc.tacticaltrack.data.remote.*
@@ -42,7 +43,7 @@ class ScreensAndroidTest {
   verify{login.onUsernameChange("ad@duoc.cl");login.onPasswordChange("Prueba");login.login()}
   compose.runOnIdle{state.value=LoginUiState(busy=false,usernameError="Correo requerido",passwordError="Clave requerida",error="Sin conexión")}
   compose.onNodeWithText("Correo requerido").assertIsDisplayed();compose.onNodeWithText("Clave requerida").assertIsDisplayed()
-  compose.onNodeWithText("Reintentar conexión").performClick();verify{login.restoreSession()}
+  compose.onNodeWithText("Reintentar conexión").performSemanticsAction(SemanticsActions.OnClick){it()};verify{login.restoreSession()}
   compose.runOnIdle{state.value=LoginUiState(busy=true)};compose.onNodeWithText("Correo electrónico").assertIsNotEnabled()
  }
  @Test fun homeShowsNameCountsBothLayoutsAndDispatchesActions(){

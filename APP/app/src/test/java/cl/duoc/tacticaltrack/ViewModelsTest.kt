@@ -44,6 +44,15 @@ class ViewModelsTest {
         every { location.accuracy } returns 5f
         vm.setLocation(location)
     }
+    @Test fun notificationNavigationRequiresSuccessfulFetch() = runTest(dispatcher) {
+        var opened = false
+        vm.openRemoteVisit(1) { opened = true }; advanceUntilIdle()
+        assertTrue(opened); coVerify { repo.fetchVisit(1) }
+        opened = false
+        coEvery { repo.fetchVisit(99) } throws IOException()
+        vm.openRemoteVisit(99) { opened = true }; advanceUntilIdle()
+        assertFalse(opened); assertNotNull(vm.remote.value.error)
+    }
     @Test fun formValidationAndFieldChanges() {
         assertFalse(vm.validateBeforeEvidence())
         fillForm(); assertTrue(vm.validateBeforeEvidence())

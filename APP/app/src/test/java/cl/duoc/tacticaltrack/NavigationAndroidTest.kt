@@ -64,6 +64,8 @@ class NavigationAndroidTest {
   var consumed=false
   compose.setContent{TacticalTrackTheme{TacticalTrackApp(false,1){consumed=true}}}
   compose.waitUntil(5000){consumed}
+  compose.waitUntil(5000){compose.onAllNodesWithText("Detalle de visita").fetchSemanticsNodes().isNotEmpty()}
+  compose.mainClock.advanceTimeBy(1000);compose.waitForIdle()
   compose.onNodeWithText("Detalle de visita").assertIsDisplayed()
  }
  @Test fun routesKeepVisitIdentifier(){
