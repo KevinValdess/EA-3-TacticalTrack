@@ -69,7 +69,9 @@ class NavigationAndroidTest {
   compose.setContent{TacticalTrackTheme{TacticalTrackApp(false,pending.value){consumed=true;pending.value=null}}}
   compose.onNodeWithText("Hola, Kevin · Supervisor").assertExists()
   compose.runOnIdle{pending.value=1L}
-  compose.waitUntil(5000){consumed}
+  compose.mainClock.advanceTimeBy(1000)
+  compose.waitForIdle()
+  compose.runOnIdle{assertTrue("El aviso debe consumirse tras actualizar la composición",consumed)}
   compose.waitUntil(5000){compose.onAllNodesWithText("Detalle de visita").fetchSemanticsNodes().isNotEmpty()}
   compose.mainClock.advanceTimeBy(1000);compose.waitForIdle()
   compose.onNodeWithText("Detalle de visita").assertIsDisplayed()
